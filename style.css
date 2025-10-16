@@ -241,6 +241,13 @@ footer a:hover {
         display: block;
     }
 
+    /* Style the secondary nav on the Favorites page */
+    #page-nav li {
+        display: block;
+        text-align: center;
+        margin: 10px auto;
+    }
+
     /* 3. Remove image floats so they stack cleanly */
     .float-right,
     .float-left {
@@ -267,6 +274,7 @@ footer a:hover {
         font-size: 2em;
     }
 }
+
 
 
 
