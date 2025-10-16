@@ -185,4 +185,53 @@ footer li a {
 
 footer a:hover {
     text-decoration: underline;
+
+}
+
+
+
+
+/* =================================== */
+/* === MOBILE STYLES (768px & below) === */
+/* =================================== */
+@media (max-width: 768px) {
+
+    /* 1. Make the main wrapper use more screen space */
+    .wrapper {
+        max-width: 98%;
+        padding: 1%;
+    }
+
+    /* 2. Stack the main navigation links vertically */
+    #site-nav li {
+        display: block; /* Changes from inline-block to block */
+        text-align: center;
+        padding: 5px; /* Reduce padding for a tighter look */
+    }
+
+    /* 3. Remove image floats so they stack cleanly */
+    .float-right,
+    .float-left {
+        float: none; /* Disables the float property */
+        display: block;
+        margin: 20px auto; /* Centers the figure block */
+    }
+    
+    /* 4. Make featured project cards stack vertically */
+    .project-card {
+        width: 95%; /* Makes each card take up most of the width */
+        margin: 10px auto;
+    }
+
+    /* 5. Stack footer links for better readability */
+    footer li {
+        display: block;
+        padding: 5px 0; /* Adds vertical space, removes horizontal */
+        text-align: center;
+    }
+
+    /* 6. Slightly reduce the main heading size */
+    h1 {
+        font-size: 2em;
+    }
 }
