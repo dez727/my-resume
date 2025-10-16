@@ -214,15 +214,7 @@ footer a:hover {
         padding: 1%;
     }
 
-    <!--
-        /* 2. Stack the main navigation links vertically */
-        #site-nav li {
-            display: block; /* Changes from inline-block to block */
-            text-align: center;
-            padding: 5px; /* Reduce padding for a tighter look */
-        }
-    -->
-    /* Display hamburger icon in place of menu */
+    /* 2. Display hamburger icon in place of menu */
     #menu-icon {
         display: block; /* Show the icon on mobile */
     }
@@ -270,6 +262,7 @@ footer a:hover {
         font-size: 2em;
     }
 }
+
 
 
 
