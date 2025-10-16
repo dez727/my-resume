@@ -215,6 +215,11 @@ footer a:hover {
         padding: 1%;
     }
 
+    /* Push the main content down */
+    main {
+        padding-top: 60px;
+    }
+
     /* 2. Display hamburger icon in place of menu */
     #menu-icon {
         display: block; /* Show the icon on mobile */
@@ -262,6 +267,7 @@ footer a:hover {
         font-size: 2em;
     }
 }
+
 
 
 
