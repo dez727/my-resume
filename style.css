@@ -17,6 +17,19 @@ body {
     border-radius: 40px;
 }
 
+/* Style for the hamburger menu icon */
+#menu-icon {
+    display: none;
+    font-size: 2em;
+    color: rgb(244, 243, 238);
+    text-decoration: none;
+    padding: 10px;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    z-index: 1000;
+}
+
 nav ul {
     list-style-type: none;
     margin: 0;
@@ -51,20 +64,6 @@ nav a {
 #site-nav a {
     padding: 10px;
 }
-
-/* Style for the hamburger menu icon */
-#menu-icon {
-    display: none;
-    font-size: 2em;
-    color: rgb(244, 243, 238);
-    text-decoration: none;
-    padding: 10px;
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    z-index: 1000; /* This is the fix */
-}
-
 
 #page-nav ul {
     text-align: justify;
@@ -263,6 +262,7 @@ footer a:hover {
         font-size: 2em;
     }
 }
+
 
 
 
