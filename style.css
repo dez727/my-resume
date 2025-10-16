@@ -202,14 +202,35 @@ footer a:hover {
         padding: 1%;
     }
 
-<!--
-    /* 2. Stack the main navigation links vertically */
-    #site-nav li {
-        display: block; /* Changes from inline-block to block */
-        text-align: center;
-        padding: 5px; /* Reduce padding for a tighter look */
+    <!--
+        /* 2. Stack the main navigation links vertically */
+        #site-nav li {
+            display: block; /* Changes from inline-block to block */
+            text-align: center;
+            padding: 5px; /* Reduce padding for a tighter look */
+        }
+    -->
+    /* Display hamburger icon in place of menu */
+    #menu-icon {
+        display: block; /* Show the icon on mobile */
     }
--->
+    
+    #site-nav ul {
+        display: none; /* Hide the nav links by default on mobile */
+        text-align: center;
+        padding-top: 50px; /* Add space so links don't overlap the icon */
+    }
+    
+    #site-nav li {
+        display: block; /* Keep these stacked vertically when shown */
+        padding: 15px 0;
+    }
+    
+    /* This class will be added by JavaScript to show the menu */
+    #site-nav ul.show {
+        display: block;
+    }
+
 
     /* 3. Remove image floats so they stack cleanly */
     .float-right,
@@ -237,4 +258,5 @@ footer a:hover {
         font-size: 2em;
     }
 }
+
 
