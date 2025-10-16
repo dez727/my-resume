@@ -202,12 +202,14 @@ footer a:hover {
         padding: 1%;
     }
 
+<!--
     /* 2. Stack the main navigation links vertically */
     #site-nav li {
         display: block; /* Changes from inline-block to block */
         text-align: center;
         padding: 5px; /* Reduce padding for a tighter look */
     }
+-->
 
     /* 3. Remove image floats so they stack cleanly */
     .float-right,
@@ -235,3 +237,4 @@ footer a:hover {
         font-size: 2em;
     }
 }
+
