@@ -147,8 +147,9 @@ nav {
     /*
      * Semi-transparent background using rgba (red, green, blue, alpha)
      * Alpha value 0.85 = 85% opacity, allowing slight see-through effect
+     * Uses purple-tinted dark background to match site theme
      */
-    background: rgba(12, 18, 34, 0.85);
+    background: rgba(19, 19, 24, 0.85);
 
     /*
      * Backdrop-filter creates a blur effect on content behind the element
@@ -573,7 +574,7 @@ section:nth-child(6) { animation-delay: 0.6s; }  /* Last section animates last *
    along the timeline. Uses pseudo-elements for visual decorations.
    =================================================================== */
 #experience {
-    padding-top: 3rem;  /* Reduced from default 5rem for better hero transition */
+    padding-top: 1.5rem;  /* Minimal spacing for tight hero transition */
 }
 
 .experience-item {
@@ -1060,7 +1061,7 @@ footer {
     }
 
     #experience {
-        padding-top: 2rem;
+        padding-top: 1rem;  /* Tighter spacing on mobile */
     }
 
     .skills-grid,
