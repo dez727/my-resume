@@ -1,205 +1,468 @@
-/* ===========================
-   CSS Variables & Theme
-   =========================== */
+/* ===================================================================
+   CSS VARIABLES & THEME
+
+   CSS Custom Properties (variables) allow us to define reusable values
+   that can be referenced throughout the stylesheet. This makes it easy
+   to maintain consistent colors and update the entire theme by changing
+   values in one place.
+
+   Syntax: --variable-name: value;
+   Usage: property: var(--variable-name);
+
+   Benefits:
+   - Easy theme maintenance and updates
+   - Consistent design tokens across the site
+   - Can be changed dynamically with JavaScript
+   =================================================================== */
+
 :root {
-    --bg-primary: #0c1222;
-    --bg-secondary: #141d2f;
-    --bg-card: #1a2540;
-    --text-primary: #e8edf5;
-    --text-secondary: #94a3b8;
-    --text-muted: #64748b;
-    --accent: #38bdf8;
-    --accent-glow: rgba(56, 189, 248, 0.15);
-    --accent-secondary: #2dd4bf;
-    --border: rgba(148, 163, 184, 0.1);
-    --gradient-start: #38bdf8;
-    --gradient-end: #2dd4bf;
+    /* The :root selector targets the document root (highest level).
+       Variables defined here are available globally throughout the CSS. */
+
+    /* Background Colors - Dark theme with deep purple undertones */
+    --bg-primary: #0a0a0f;      /* Main page background - rich dark with subtle purple */
+    --bg-secondary: #131318;    /* Secondary containers - slightly lighter */
+    --bg-card: #1a1a24;         /* Card backgrounds - lightest dark shade */
+
+    /* Text Colors - Hierarchy from most to least prominent */
+    --text-primary: #e8e5f0;    /* Main text - almost white with slight purple tint */
+    --text-secondary: #a5a0b8;  /* Secondary text - muted purple-gray */
+    --text-muted: #6b6878;      /* Least important text - darker gray-purple */
+
+    /* Accent Colors - Vibrant purple and violet theme */
+    --accent: #a855f7;          /* Primary accent - vibrant deep purple */
+    --accent-glow: rgba(168, 85, 247, 0.15);  /* Transparent purple for hover effects */
+    --accent-secondary: #e879f9; /* Secondary accent - bright violet/magenta */
+
+    /* Utility Colors */
+    --border: rgba(168, 85, 247, 0.12);  /* Semi-transparent purple borders */
+
+    /* Gradient Colors - Purple to violet gradient */
+    --gradient-start: #a855f7;   /* Gradient beginning - deep purple */
+    --gradient-end: #e879f9;     /* Gradient ending - bright violet */
 }
 
-/* ===========================
-   Reset & Base
-   =========================== */
+/* ===================================================================
+   RESET & BASE STYLES
+
+   Reset styles remove default browser styling to ensure consistency
+   across different browsers. Base styles set up fundamental page layout.
+   =================================================================== */
+
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+    /* Universal selector (*) targets ALL elements on the page */
+    margin: 0;              /* Remove default margins */
+    padding: 0;             /* Remove default padding */
+    box-sizing: border-box; /* Include padding and border in element's total width/height */
+
+    /*
+     * box-sizing: border-box is crucial for predictable layouts
+     * Without it, padding and border add to element's width, making sizing difficult
+     * With it, width includes padding and border, making calculations easier
+     */
 }
 
 html {
+    /*
+     * scroll-behavior: smooth creates animated scrolling
+     * When clicking anchor links, page scrolls smoothly instead of jumping
+     */
     scroll-behavior: smooth;
 }
 
 body {
+    /* Font Stack - List of fonts in order of preference */
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    line-height: 1.6;
-    font-size: 16px;
-    overflow-x: hidden;
+    /* DM Sans (custom Google Font), fallback to system fonts if unavailable */
+
+    background: var(--bg-primary);  /* Using our CSS variable for dark background */
+    color: var(--text-primary);     /* Using our CSS variable for light text */
+    line-height: 1.6;               /* Space between lines of text (1.6 = 160% of font size) */
+    font-size: 16px;                /* Base font size - rem units are based on this */
+    overflow-x: hidden;             /* Prevent horizontal scrolling */
 }
 
-/* Subtle background texture */
+/* ===================================================================
+   BACKGROUND TEXTURE (Pseudo-element)
+
+   The ::before pseudo-element creates a decorative layer without
+   adding extra HTML. It's positioned behind the content.
+   =================================================================== */
 body::before {
+    /*
+     * content: '' is required for pseudo-elements to appear
+     * Even if empty, this property must exist
+     */
     content: '';
+
+    /*
+     * Fixed positioning keeps element in place while page scrolls
+     * Positioned relative to the viewport (browser window)
+     */
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: 
-        radial-gradient(ellipse at 20% 20%, rgba(56, 189, 248, 0.03) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 80%, rgba(45, 212, 191, 0.03) 0%, transparent 50%);
+
+    /*
+     * Radial gradients create circular color transitions
+     * Two gradients layered create subtle glowing effects
+     * Very low opacity (0.03) makes it barely visible - just adds depth
+     */
+    background:
+        radial-gradient(ellipse at 20% 20%, rgba(168, 85, 247, 0.03) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(232, 121, 249, 0.03) 0%, transparent 50%);
+
+    /*
+     * pointer-events: none allows clicks to pass through this layer
+     * Without this, the layer would block interaction with content below
+     */
     pointer-events: none;
+
+    /*
+     * z-index controls stacking order (which element appears on top)
+     * Negative values place element behind normal content
+     */
     z-index: -1;
 }
 
-/* ===========================
-   Navigation
-   =========================== */
+/* ===================================================================
+   NAVIGATION
+
+   Fixed navigation bar that stays visible while scrolling. Uses flexbox
+   to arrange logo and links horizontally with space between them.
+   =================================================================== */
 nav {
+    /*
+     * Fixed positioning removes element from normal document flow
+     * Element stays in the same position even when scrolling
+     * Positioned relative to the viewport (browser window)
+     */
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
+    top: 0;      /* Stick to top of viewport */
+    left: 0;     /* Stretch from left edge */
+    right: 0;    /* To right edge - creates full-width navbar */
+
+    /*
+     * Semi-transparent background using rgba (red, green, blue, alpha)
+     * Alpha value 0.85 = 85% opacity, allowing slight see-through effect
+     */
     background: rgba(12, 18, 34, 0.85);
+
+    /*
+     * Backdrop-filter creates a blur effect on content behind the element
+     * Creates a "frosted glass" effect - modern browsers only
+     * -webkit- prefix needed for Safari compatibility
+     */
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border);
+
+    border-bottom: 1px solid var(--border);  /* Subtle divider line */
+
+    /*
+     * z-index: 1000 ensures nav appears above other content
+     * Higher z-index = closer to user. 1000 is arbitrarily high to stay on top
+     */
     z-index: 1000;
-    padding: 0 2rem;
+
+    padding: 0 2rem;  /* Horizontal padding - no vertical padding */
 }
 
 .nav-container {
-    max-width: 1100px;
-    margin: 0 auto;
+    /* Container sizing and centering */
+    max-width: 1100px;   /* Limits width on large screens for readability */
+    margin: 0 auto;      /* Centers container horizontally (auto left/right margins) */
+    height: 64px;        /* Fixed height for consistent navbar size */
+
+    /*
+     * FLEXBOX LAYOUT
+     * Flexbox arranges children in a flexible row or column
+     * Perfect for navigation bars where items need to align horizontally
+     */
     display: flex;
+
+    /*
+     * justify-content: Controls alignment along the MAIN axis (horizontal for rows)
+     * 'space-between' pushes first item to start, last item to end
+     * Creates maximum space between logo and nav links
+     */
     justify-content: space-between;
+
+    /*
+     * align-items: Controls alignment along the CROSS axis (vertical for rows)
+     * 'center' vertically centers all items in the container
+     * Ensures logo and links align properly regardless of their size
+     */
     align-items: center;
-    height: 64px;
 }
 
 .nav-logo {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-size: 1.25rem;
-    font-weight: 500;
+    font-family: 'Playfair Display', Georgia, serif;  /* Serif font for elegance */
+    font-size: 1.25rem;      /* rem = relative to root font size (16px), so 1.25rem = 20px */
+    font-weight: 500;        /* Medium weight */
     color: var(--text-primary);
-    text-decoration: none;
-    letter-spacing: -0.02em;
+    text-decoration: none;   /* Remove underline from link */
+    letter-spacing: -0.02em; /* Slight negative spacing tightens letters (em = relative to font size) */
 }
 
 .nav-links {
-    display: flex;
-    gap: 2rem;
-    list-style: none;
+    display: flex;        /* Arrange list items horizontally */
+    gap: 2rem;           /* Modern way to add space between flex items (replaces margin) */
+    list-style: none;    /* Remove bullet points */
 }
 
 .nav-links a {
-    color: var(--text-secondary);
-    text-decoration: none;
-    font-size: 0.875rem;
-    font-weight: 400;
+    color: var(--text-secondary);  /* Muted color for unselected links */
+    text-decoration: none;         /* Remove underline */
+    font-size: 0.875rem;          /* Slightly smaller than body text (14px) */
+    font-weight: 400;             /* Normal weight */
+
+    /*
+     * TRANSITIONS - Smooth animations when properties change
+     * Syntax: transition: property duration timing-function;
+     * Here: color changes over 0.2 seconds with ease timing (slow start/end)
+     */
     transition: color 0.2s ease;
-    position: relative;
+
+    position: relative;  /* Creates positioning context for ::after pseudo-element */
 }
 
+/*
+ * :hover is a pseudo-class that applies when user hovers over element
+ * Provides visual feedback for interactivity
+ */
 .nav-links a:hover {
-    color: var(--accent);
+    color: var(--accent);  /* Change to bright accent color on hover */
 }
 
+/*
+ * ::after PSEUDO-ELEMENT creates animated underline effect
+ * Pseudo-elements add content without extra HTML
+ */
 .nav-links a::after {
-    content: '';
+    content: '';  /* Required for pseudo-element to appear (even if empty) */
+
+    /*
+     * Absolute positioning places element relative to nearest positioned ancestor
+     * Parent has position: relative, so this positions relative to the link
+     */
     position: absolute;
-    bottom: -4px;
-    left: 0;
-    width: 0;
-    height: 1px;
-    background: var(--accent);
-    transition: width 0.2s ease;
+    bottom: -4px;  /* 4px below the link text */
+    left: 0;       /* Aligned to left edge */
+
+    width: 0;      /* Starts with no width (invisible) */
+    height: 1px;   /* Thin line */
+    background: var(--accent);  /* Accent color line */
+
+    transition: width 0.2s ease;  /* Animate width changes */
 }
 
+/*
+ * On hover, animate the underline from left to right
+ * width: 0 → width: 100% creates a growing line effect
+ */
 .nav-links a:hover::after {
-    width: 100%;
+    width: 100%;  /* Expand to full width of link */
 }
 
-/* Mobile Navigation Toggle */
+/* -------------------------------------------------------------------
+   Mobile Navigation Toggle (Hamburger Menu)
+
+   Hidden on desktop, visible on mobile. Creates a "hamburger" icon
+   with three horizontal lines that users can tap to open the menu.
+   ------------------------------------------------------------------- */
 .nav-toggle {
+    /*
+     * display: none hides element completely on desktop
+     * Media query at bottom of file changes this to block on mobile
+     */
     display: none;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0.5rem;
+
+    background: none;  /* Remove default button background */
+    border: none;      /* Remove default button border */
+    cursor: pointer;   /* Show hand cursor on hover (indicates clickable) */
+    padding: 0.5rem;   /* Small padding for larger touch target */
 }
 
 .nav-toggle span {
-    display: block;
-    width: 24px;
-    height: 2px;
-    background: var(--text-primary);
-    margin: 5px 0;
+    /*
+     * Creates the three horizontal lines of the hamburger icon
+     * Three <span> elements in HTML become three lines
+     */
+    display: block;   /* Each span becomes a line */
+    width: 24px;      /* Line width */
+    height: 2px;      /* Line thickness */
+    background: var(--text-primary);  /* Line color */
+    margin: 5px 0;    /* Vertical spacing between lines */
+
+    /*
+     * Transition prepares for animation (rotates into X when menu opens)
+     * JavaScript adds classes that trigger these animations
+     */
     transition: all 0.3s ease;
 }
 
-/* ===========================
-   Main Content
-   =========================== */
+/* ===================================================================
+   MAIN CONTENT
+
+   Container for all page content sections. Centers content and adds
+   consistent padding on sides.
+   =================================================================== */
 main {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 2rem;
+    max-width: 1100px;   /* Prevents content from being too wide on large screens */
+    margin: 0 auto;      /* Centers container horizontally */
+    padding: 0 2rem;     /* Horizontal padding - keeps content away from screen edges */
 }
 
+/* -------------------------------------------------------------------
+   Section Animations
+
+   All sections start invisible and slide up into view when page loads.
+   Creates a polished, modern entrance effect.
+   ------------------------------------------------------------------- */
 section {
-    padding: 5rem 0;
-    opacity: 0;
-    transform: translateY(20px);
+    padding: 5rem 0;  /* Vertical spacing between sections (5rem top, 5rem bottom) */
+
+    /*
+     * Initial state before animation (invisible and slightly below position)
+     */
+    opacity: 0;                /* Completely transparent */
+    transform: translateY(20px); /* Shifted down 20px from final position */
+
+    /*
+     * ANIMATION PROPERTY
+     * Syntax: animation: name duration timing-function fill-mode;
+     * - fadeInUp: name of keyframe animation (defined below)
+     * - 0.6s: animation lasts 0.6 seconds
+     * - ease: starts slow, speeds up, ends slow
+     * - forwards: keeps final state after animation completes
+     */
     animation: fadeInUp 0.6s ease forwards;
 }
 
-section:nth-child(1) { animation-delay: 0.1s; }
-section:nth-child(2) { animation-delay: 0.2s; }
+/*
+ * :nth-child() PSEUDO-CLASS selects elements by position
+ * Each section gets a different delay, creating staggered entrance effect
+ */
+section:nth-child(1) { animation-delay: 0.1s; }  /* First section animates first */
+section:nth-child(2) { animation-delay: 0.2s; }  /* Second section 0.1s later */
 section:nth-child(3) { animation-delay: 0.3s; }
 section:nth-child(4) { animation-delay: 0.4s; }
 section:nth-child(5) { animation-delay: 0.5s; }
-section:nth-child(6) { animation-delay: 0.6s; }
+section:nth-child(6) { animation-delay: 0.6s; }  /* Last section animates last */
 
+/*
+ * @keyframes DEFINES ANIMATION
+ * Describes how properties change over time
+ * 'from' state is set on the element (opacity: 0, translateY(20px))
+ * Only need to define 'to' state - browser calculates intermediate frames
+ */
 @keyframes fadeInUp {
     to {
-        opacity: 1;
-        transform: translateY(0);
+        opacity: 1;              /* Fade to fully visible */
+        transform: translateY(0); /* Slide to original position */
     }
+    /* Result: Sections fade in while sliding up 20px */
 }
 
-/* ===========================
-   Hero Section
-   =========================== */
+/* ===================================================================
+   HERO SECTION
+
+   Full-height landing section with name, tagline, and photo.
+   Uses CSS Grid to create two-column layout.
+   =================================================================== */
 #hero {
+    /*
+     * vh = viewport height unit (1vh = 1% of browser window height)
+     * min-height: 100vh makes section fill the full screen height
+     * min-height (not height) allows section to grow if content is taller
+     */
     min-height: 100vh;
-    display: flex;
-    align-items: center;
-    padding-top: 64px;
+
+    display: flex;         /* Use flexbox to vertically center content */
+    align-items: center;   /* Center content vertically within the full-height section */
+
+    padding-top: 64px;     /* Account for fixed navbar height */
+    padding-bottom: 0;     /* No bottom padding - creates smooth transition to next section */
 }
 
 .hero-content {
+    /*
+     * CSS GRID LAYOUT
+     * More powerful than flexbox for two-dimensional layouts
+     * Perfect for creating columns with different sizes
+     */
     display: grid;
+
+    /*
+     * grid-template-columns defines column structure
+     * '1fr 280px' creates two columns:
+     * - 1fr: One "fraction" unit - takes all remaining space (flexible)
+     * - 280px: Fixed width for photo column
+     * Result: Text column grows/shrinks, photo stays 280px wide
+     */
     grid-template-columns: 1fr 280px;
+
+    /*
+     * gap: Modern property for spacing between grid items
+     * Replaces old grid-column-gap and grid-row-gap
+     * 4rem creates generous space between text and photo
+     */
     gap: 4rem;
-    align-items: center;
+
+    align-items: center;  /* Vertically center items within their grid cells */
 }
 
 .hero-text h1 {
-    font-family: 'Playfair Display', Georgia, serif;
+    font-family: 'Playfair Display', Georgia, serif;  /* Serif font for elegance */
+
+    /*
+     * clamp() FUNCTION creates responsive typography
+     * Syntax: clamp(minimum, preferred, maximum)
+     * Here: clamp(2.5rem, 5vw, 3.5rem)
+     * - Minimum: 2.5rem (40px) - won't shrink below this
+     * - Preferred: 5vw (5% of viewport width) - scales with screen size
+     * - Maximum: 3.5rem (56px) - won't grow above this
+     * Result: Heading automatically resizes without media queries
+     */
     font-size: clamp(2.5rem, 5vw, 3.5rem);
-    font-weight: 500;
-    letter-spacing: -0.03em;
-    line-height: 1.1;
+
+    font-weight: 500;        /* Medium weight */
+    letter-spacing: -0.03em; /* Tight spacing for large headings */
+    line-height: 1.1;        /* Tight line height (1.1 = 110% of font size) */
     margin-bottom: 1rem;
 }
 
+/*
+ * GRADIENT TEXT EFFECT
+ * Creates colorful gradient on text using background-clip technique
+ * This is an advanced CSS trick!
+ */
 .hero-text h1 span {
+    /*
+     * Step 1: Create gradient as background
+     * linear-gradient(angle, color1, color2)
+     * 135deg creates diagonal gradient from top-left to bottom-right
+     */
     background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+
+    /*
+     * Step 2: Clip background to text shape
+     * -webkit- prefix needed for broader browser support
+     * Normally background extends to full element box - this clips it to just the text
+     */
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     background-clip: text;
+
+    /*
+     * Step 3: Make text transparent so gradient shows through
+     * -webkit prefix needed for Safari/Chrome
+     * The gradient background is now visible through the transparent text
+     */
+    -webkit-text-fill-color: transparent;
+
+    /* Result: Text appears filled with gradient instead of solid color */
 }
 
 .hero-tagline {
@@ -303,29 +566,73 @@ section:nth-child(6) { animation-delay: 0.6s; }
     background: linear-gradient(90deg, var(--accent), transparent);
 }
 
-/* ===========================
-   Experience Section
-   =========================== */
+/* ===================================================================
+   EXPERIENCE SECTION
+
+   Timeline layout with vertical line and dots. Each job is an item
+   along the timeline. Uses pseudo-elements for visual decorations.
+   =================================================================== */
+#experience {
+    padding-top: 3rem;  /* Reduced from default 5rem for better hero transition */
+}
+
 .experience-item {
+    /*
+     * position: relative creates positioning context for child absolute elements
+     * The ::before pseudo-element (dot) positions relative to this container
+     */
     position: relative;
-    padding-left: 1.5rem;
-    padding-bottom: 3rem;
+
+    padding-left: 1.5rem;   /* Space for the timeline line */
+    padding-bottom: 3rem;   /* Spacing between jobs */
+
+    /*
+     * border-left creates the vertical timeline line
+     * Runs down the left side connecting all experience items
+     */
     border-left: 1px solid var(--border);
 }
 
+/*
+ * :last-child PSEUDO-CLASS targets the last item in a group
+ * Removes bottom padding from final experience item (no space after)
+ */
 .experience-item:last-child {
     padding-bottom: 0;
 }
 
+/*
+ * ::before PSEUDO-ELEMENT creates the timeline dot
+ * Adds visual element without extra HTML markup
+ */
 .experience-item::before {
-    content: '';
+    content: '';  /* Required for pseudo-element to appear */
+
+    /*
+     * Absolute positioning places dot relative to .experience-item
+     * Parent has position: relative, so this positions relative to it
+     */
     position: absolute;
-    left: -4px;
-    top: 6px;
+    left: -4px;  /* Negative value pulls dot left, centering on timeline line */
+    top: 6px;    /* Vertical position from top of item */
+
+    /* Dot size */
     width: 7px;
     height: 7px;
+
+    /*
+     * border-radius: 50% creates perfect circle
+     * 50% on square element = circle
+     */
     border-radius: 50%;
-    background: var(--accent);
+
+    background: var(--accent);  /* Bright accent color for visibility */
+
+    /*
+     * box-shadow creates glow effect around dot
+     * Syntax: x-offset y-offset blur-radius color
+     * 0 0 10px creates centered glow (no offset, just blur)
+     */
     box-shadow: 0 0 10px var(--accent);
 }
 
@@ -471,13 +778,37 @@ section:nth-child(6) { animation-delay: 0.6s; }
     font-weight: 500;
 }
 
-/* ===========================
-   Skills Section
-   =========================== */
+/* ===================================================================
+   SKILLS SECTION
+
+   Responsive grid that automatically adjusts columns based on screen size.
+   Uses advanced Grid techniques for truly responsive layouts without media queries.
+   =================================================================== */
 .skills-grid {
     display: grid;
+
+    /*
+     * RESPONSIVE GRID FORMULA: repeat(auto-fit, minmax(min, max))
+     * This is one of the most powerful CSS Grid patterns!
+     *
+     * Breaking it down:
+     * - repeat(): Creates multiple columns with same sizing
+     * - auto-fit: Automatically fits as many columns as possible in available space
+     * - minmax(300px, 1fr): Each column is minimum 300px, maximum 1fr (equal width)
+     *
+     * How it works:
+     * - On wide screens: Multiple columns (as many as fit at 300px minimum)
+     * - On narrow screens: Fewer columns (automatically wraps when space < 300px)
+     * - No media queries needed! Grid adjusts automatically
+     *
+     * Example:
+     * - 1200px wide = 4 columns (1200 / 300 = 4)
+     * - 800px wide = 2 columns (800 / 300 = 2.67, rounds down to 2)
+     * - 500px wide = 1 column (500 / 300 = 1.67, rounds down to 1)
+     */
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
+
+    gap: 1.5rem;  /* Space between grid items */
 }
 
 .skill-category {
@@ -616,62 +947,104 @@ footer {
     color: var(--accent);
 }
 
-/* ===========================
-   Responsive Design
-   =========================== */
+/* ===================================================================
+   RESPONSIVE DESIGN
+
+   Media queries apply different styles based on screen size. This creates
+   layouts optimized for different devices (desktop, tablet, mobile).
+   =================================================================== */
+
+/*
+ * @media RULE applies styles only when conditions are met
+ * (max-width: 900px) = Styles apply when viewport is 900px or narrower
+ * Common breakpoints: 1200px (large desktop), 900px (tablet), 768px (mobile)
+ */
 @media (max-width: 900px) {
+    /* TABLET LAYOUT: Stack hero content vertically */
+
     .hero-content {
-        grid-template-columns: 1fr;
-        text-align: center;
+        grid-template-columns: 1fr;  /* Single column instead of two */
+        text-align: center;          /* Center-align text */
     }
 
     .hero-photo {
+        /*
+         * order: -1 changes flex/grid item order
+         * Negative value moves item before others
+         * Result: Photo appears above text instead of beside it
+         */
         order: -1;
-        margin: 0 auto;
+
+        margin: 0 auto;  /* Center the photo horizontally */
     }
 
     .hero-photo img {
-        width: 200px;
+        width: 200px;   /* Smaller photo on tablets */
         height: 200px;
     }
 
     .hero-summary {
-        max-width: 100%;
+        max-width: 100%;  /* Remove width restriction for full-width text */
     }
 
     .hero-contact {
-        justify-content: center;
+        justify-content: center;  /* Center contact buttons */
     }
 }
 
+/*
+ * Second breakpoint for smaller screens (mobile phones)
+ * Screens 768px and narrower get these additional changes
+ */
 @media (max-width: 768px) {
+    /* MOBILE LAYOUT */
+
     nav {
-        padding: 0 1rem;
+        padding: 0 1rem;  /* Reduced padding for narrow screens */
     }
 
     .nav-toggle {
+        /*
+         * display: block makes hamburger menu visible on mobile
+         * Was display: none on desktop
+         */
         display: block;
     }
 
     .nav-links {
-        position: fixed;
-        top: 64px;
+        /*
+         * Mobile Navigation Menu (Hamburger Menu)
+         * Starts hidden above viewport, slides down when opened
+         */
+        position: fixed;     /* Fixed positioning relative to viewport */
+        top: 64px;          /* Below the navbar */
         left: 0;
-        right: 0;
-        background: rgba(12, 18, 34, 0.98);
-        flex-direction: column;
+        right: 0;           /* Full-width */
+
+        background: rgba(12, 18, 34, 0.98);  /* Nearly opaque background */
+        flex-direction: column;  /* Stack links vertically */
         padding: 2rem;
         gap: 1.5rem;
+
+        /*
+         * transform: translateY(-100%) moves element up by its full height
+         * Result: Menu is hidden above the viewport initially
+         */
         transform: translateY(-100%);
-        opacity: 0;
-        transition: all 0.3s ease;
-        pointer-events: none;
+
+        opacity: 0;              /* Invisible */
+        transition: all 0.3s ease;  /* Smooth animation when opening/closing */
+        pointer-events: none;    /* Can't click on hidden menu */
     }
 
+    /*
+     * .active class is added by JavaScript when user clicks hamburger
+     * This reveals the menu with a slide-down animation
+     */
     .nav-links.active {
-        transform: translateY(0);
-        opacity: 1;
-        pointer-events: all;
+        transform: translateY(0);  /* Move to visible position */
+        opacity: 1;                /* Fully visible */
+        pointer-events: all;       /* Can interact with menu */
     }
 
     main {
@@ -680,6 +1053,14 @@ footer {
 
     section {
         padding: 3rem 0;
+    }
+
+    #hero {
+        padding-bottom: 0;
+    }
+
+    #experience {
+        padding-top: 2rem;
     }
 
     .skills-grid,
