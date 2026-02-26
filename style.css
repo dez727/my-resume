@@ -29,17 +29,17 @@
     --text-secondary: #a5a0b8;  /* Secondary text - muted purple-gray */
     --text-muted: #6b6878;      /* Least important text - darker gray-purple */
 
-    /* Accent Colors - Vibrant purple and violet theme */
-    --accent: #a855f7;          /* Primary accent - vibrant deep purple */
-    --accent-glow: rgba(168, 85, 247, 0.15);  /* Transparent purple for hover effects */
-    --accent-secondary: #e879f9; /* Secondary accent - bright violet/magenta */
+    /* Accent Colors - Amber and gold theme */
+    --accent: #f59e0b;          /* Primary accent - vibrant amber */
+    --accent-glow: rgba(245, 158, 11, 0.15);  /* Transparent amber for hover effects */
+    --accent-secondary: #fbbf24; /* Secondary accent - bright gold */
 
     /* Utility Colors */
-    --border: rgba(168, 85, 247, 0.12);  /* Semi-transparent purple borders */
+    --border: rgba(245, 158, 11, 0.12);  /* Semi-transparent amber borders */
 
-    /* Gradient Colors - Purple to violet gradient */
-    --gradient-start: #a855f7;   /* Gradient beginning - deep purple */
-    --gradient-end: #e879f9;     /* Gradient ending - bright violet */
+    /* Gradient Colors - Amber to gold gradient */
+    --gradient-start: #f59e0b;   /* Gradient beginning - amber */
+    --gradient-end: #fbbf24;     /* Gradient ending - bright gold */
 }
 
 /* ===================================================================
@@ -111,8 +111,8 @@ body::before {
      * Very low opacity (0.03) makes it barely visible - just adds depth
      */
     background:
-        radial-gradient(ellipse at 20% 20%, rgba(168, 85, 247, 0.03) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 80%, rgba(232, 121, 249, 0.03) 0%, transparent 50%);
+        radial-gradient(ellipse at 20% 20%, rgba(245, 158, 11, 0.03) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(251, 191, 36, 0.03) 0%, transparent 50%);
 
     /*
      * pointer-events: none allows clicks to pass through this layer
@@ -873,7 +873,7 @@ section:nth-child(6) { animation-delay: 0.6s; }  /* Last section animates last *
 }
 
 .project-card:hover {
-    border-color: rgba(56, 189, 248, 0.3);
+    border-color: rgba(245, 158, 11, 0.3);
     transform: translateY(-2px);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
