@@ -379,7 +379,7 @@ section:nth-child(6) { animation-delay: 0.6s; }  /* Last section animates last *
      * min-height: 100vh makes section fill the full screen height
      * min-height (not height) allows section to grow if content is taller
      */
-    min-height: 100vh;
+    min-height: 80vh;
 
     display: flex;         /* Use flexbox to vertically center content */
     align-items: center;   /* Center content vertically within the full-height section */
