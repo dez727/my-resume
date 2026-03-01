@@ -1,45 +1,9 @@
-<!--
-    HTML Document Structure
-    This is a personal resume website built with semantic HTML5, CSS3, and vanilla JavaScript.
-    No frameworks - just clean, modern web development fundamentals.
-    Last updated: 2026-02-19
--->
-
 <!DOCTYPE html>
-<!-- DOCTYPE declaration tells browser this is an HTML5 document -->
-
 <html lang="en">
-<!-- html element is the root of the document. lang="en" specifies English language for accessibility -->
-
 <head>
-    <!--
-        HEAD SECTION
-        Contains metadata (information about the page) that doesn't display directly.
-        Includes character encoding, viewport settings, title, and external resources.
-    -->
-
     <meta charset="UTF-8">
-    <!--
-        Character encoding: UTF-8 supports all languages and special characters
-        Always include this first in <head> to ensure proper text rendering
-    -->
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!--
-        Viewport meta tag for responsive design (essential for mobile)
-        - width=device-width: Page width matches device screen width
-        - initial-scale=1.0: No zoom on page load
-        Without this, mobile browsers render pages at desktop width and zoom out
-    -->
-
-    <title>Desmond Adongo | AI Consultant & UW System Regent</title>
-    <!-- Title appears in browser tab and search engine results -->
-
-    <!-- =================================================================
-         GOOGLE FONTS
-         Loads custom fonts from Google Fonts for better typography
-         ================================================================= -->
-
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       <title>Desmond Adongo | AI Consultant & UW System Regent</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <!--
@@ -49,42 +13,13 @@
     -->
 
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
-    <!--
-        Loads two font families:
-        - DM Sans: Clean sans-serif for body text (multiple weights)
-        - Playfair Display: Elegant serif for headings
-        display=swap: Shows fallback font while custom font loads (better UX)
-    -->
-
-    <!-- =================================================================
-         EXTERNAL STYLESHEET
-         Links to CSS file for all styling (separation of concerns)
-         ================================================================= -->
     <link rel="stylesheet" href="style.css">
-    <!-- rel="stylesheet" indicates this is a CSS file -->
 </head>
 <body>
-    <!-- =================================================================
-         NAVIGATION BAR
-         Fixed navigation that stays visible while scrolling. Contains logo,
-         mobile menu toggle, and navigation links to page sections.
-         ================================================================= -->
     <nav>
-        <!--
-            <nav> is a semantic HTML5 element indicating navigation links
-            Helps screen readers identify main navigation area
-        -->
-
         <div class="nav-container">
-            <!-- Container div centers and constrains navigation width -->
-
             <a href="#hero" class="nav-logo">DA</a>
-            <!--
-                Logo link - clicking returns to top of page
-                href="#hero" is an anchor link (jumps to element with id="hero")
-                # indicates an ID selector in the same page
-            -->
-
+     
             <button class="nav-toggle" aria-label="Toggle navigation">
                 <!--
                     Mobile hamburger menu button
@@ -107,11 +42,6 @@
                 <li><a href="#education">Education</a></li>
                 <li><a href="#skills">Skills</a></li>
                 <li><a href="#projects">Projects</a></li>
-                <!--
-                    <li> = List Item
-                    Each anchor (<a>) links to a section ID on the page
-                    Clicking scrolls smoothly to that section (smooth-scroll CSS)
-                -->
             </ul>
         </div>
     </nav>
@@ -129,33 +59,16 @@
              Uses CSS Grid for two-column layout (text | photo)
              ============================================================ -->
         <section id="hero">
-            <!--
-                <section> groups related content thematically
-                id="hero" allows CSS styling and anchor link targeting (#hero)
-                IDs must be unique on the page
-            -->
-
+           
             <div class="hero-content">
-                <!-- Grid container: Left column (text) + Right column (photo) -->
-
+               
                 <div class="hero-text">
-                    <!-- Left column: All text content -->
 
                     <h1>Desmond <span>Adongo</span></h1>
-                    <!--
-                        <h1> = Heading level 1 (most important heading on page)
-                        Only one <h1> per page for SEO and accessibility
-                        <span> allows styling just the last name with gradient effect
-                    -->
-
+                   
                     <p class="hero-tagline">
                         <strong>AI Consultant</strong> · UW System Regent · Interactive Web Management
                     </p>
-                    <!--
-                        <p> = Paragraph
-                        <strong> = Semantic emphasis (important text)
-                        · = Middle dot character for visual separation
-                    -->
 
                     <p class="hero-summary">
                         I bridge technology and people — whether that's helping small businesses harness AI to work smarter,
@@ -163,16 +76,10 @@
                         actually solve problems. Born in Ghana, driven by the belief that technology should leave the world
                         better than we found it.
                     </p>
-                    <!-- Longer introductory paragraph -->
-
+                    
                     <div class="hero-contact">
-                        <!-- Contact links with icons (email, LinkedIn) -->
-
+                       
                         <a href="mailto:addez2@outlook.com">
-                            <!--
-                                mailto: protocol opens user's email client
-                                href="mailto:email@address.com" is standard for email links
-                            -->
 
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
@@ -201,17 +108,7 @@
                 </div>
 
                 <div class="hero-photo">
-                    <!-- Right column: Profile photo -->
-
                     <img src="images/photo.jpg" alt="Desmond Adongo">
-                    <!--
-                        <img> = Image element
-                        src: Path to image file (images folder)
-                        alt: Alternative text for accessibility & SEO
-                        - Describes image for screen readers
-                        - Shows if image fails to load
-                        - Required attribute for valid HTML
-                    -->
                 </div>
             </div>
         </section>
@@ -507,20 +404,15 @@
             <!-- Flexbox container: Copyright left, links right -->
 
             <div class="footer-left">
-                <p>© 2026 Desmond Adongo. Built with purpose.</p>
-                <!-- © is HTML entity for copyright symbol -->
+                <p> &copy; 2026 Desmond Adongo. Built with purpose.</p>
+               
             </div>
 
             <div class="footer-links">
                 <a href="mailto:adongd80@uwosh.edu">Email</a>
 
                 <a href="https://www.linkedin.com/in/desmondadongo" target="_blank" rel="noopener">LinkedIn</a>
-                <!--
-                    External link best practices:
-                    - target="_blank": Opens in new tab/window
-                    - rel="noopener": Security feature (prevents new page from accessing window.opener)
-                    - Always use both together for external links
-                -->
+                
             </div>
         </div>
     </footer>
@@ -531,14 +423,8 @@
          Placed at end of <body> so HTML loads before scripts run
          ================================================================= -->
     <script src="script.js"></script>
-    <!--
-        src="script.js": Path to JavaScript file
-        Could also use defer attribute in <head>: <script src="script.js" defer></script>
-        defer loads script in parallel but waits for HTML parsing to complete
-    -->
+    
 
 </body>
-<!-- End of body content -->
 
 </html>
-<!-- End of HTML document -->
