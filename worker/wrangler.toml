@@ -3,7 +3,7 @@ main = "src/index.js"
 compatibility_date = "2024-12-01"
 
 [vars]
-ALLOWED_ORIGIN = "https://dez727.github.io"
+ALLOWED_ORIGIN = "https://resume.addez.win"
 MODEL = "google/gemini-2.0-flash-001"
 MAX_TOKENS = 500
 
