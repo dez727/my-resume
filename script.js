@@ -1,4 +1,23 @@
 // ===================================================================
+// EMAIL OBFUSCATION
+//
+// Prevents spam bots from scraping email from raw HTML source.
+// Email is split into parts and assembled at runtime by JavaScript.
+// ===================================================================
+
+(function () {
+    var u = 'addez2';
+    var d = 'outlook.com';
+    var addr = u + '@' + d;
+    var el = document.getElementById('email-link');
+    var txt = document.getElementById('email-text');
+    if (el && txt) {
+        el.href = 'mailto:' + addr;
+        txt.textContent = addr;
+    }
+})();
+
+// ===================================================================
 // MOBILE NAVIGATION TOGGLE
 //
 // Handles hamburger menu functionality on mobile devices. When user
@@ -266,6 +285,7 @@ window.addEventListener('scroll', function scrollHandler() {
         "What's Desmond's experience with AI?",
         "Tell me about his leadership roles",
         "What projects has he built?",
+        "How can I contact Desmond?",
     ];
 
     // ---- DOM References ----
