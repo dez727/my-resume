@@ -198,7 +198,7 @@ const navItems = document.querySelectorAll('.nav-links a');  // All navigation l
  * Fires every time user scrolls the page
  * Note: Scroll events fire frequently - consider throttling for performance on complex sites
  */
-window.addEventListener('scroll', () => {
+window.addEventListener('scroll', function scrollHandler() {
     /*
      * Arrow function syntax - concise function definition
      * Equivalent to: function() { ... }
@@ -273,3 +273,230 @@ window.addEventListener('scroll', () => {
         }
     });
 });
+
+// ===================================================================
+// AI CHAT WIDGET
+//
+// Floating chatbot panel that streams responses from the Cloudflare
+// Worker backend. Uses textContent (never innerHTML) to prevent XSS.
+// ===================================================================
+
+(function () {
+    // ---- Configuration ----
+    // Replace with your deployed Cloudflare Worker URL
+    const CHAT_API_URL = 'https://resume-chatbot.dezad727.workers.dev/api/chat';
+    const MAX_HISTORY_SENT = 6;
+    const WELCOME_MESSAGE =
+        "Hi! I'm an AI assistant that can answer questions about Desmond's " +
+        "experience, skills, and projects. For the most accurate picture, " +
+        "also review the resume sections above. What would you like to know?";
+
+    // ---- DOM References ----
+    const widget = document.getElementById('chat-widget');
+    const toggle = document.getElementById('chat-toggle');
+    const panel = document.getElementById('chat-panel');
+    const closeBtn = document.getElementById('chat-close');
+    const messagesEl = document.getElementById('chat-messages');
+    const form = document.getElementById('chat-form');
+    const input = document.getElementById('chat-input');
+    const sendBtn = document.getElementById('chat-send');
+    const iconOpen = toggle.querySelector('.chat-icon-open');
+    const iconClose = toggle.querySelector('.chat-icon-close');
+
+    // ---- State ----
+    let isOpen = false;
+    let isStreaming = false;
+    let conversation = []; // {role, content}[]
+    let welcomeShown = false;
+
+    // ---- Open / Close ----
+    // Start with panel inert so hidden inputs aren't tabbable (a11y fix)
+    panel.inert = true;
+
+    function openChat() {
+        isOpen = true;
+        panel.inert = false;
+        panel.classList.add('chat-visible');
+        panel.setAttribute('aria-hidden', 'false');
+        toggle.classList.add('chat-open');
+        iconOpen.style.display = 'none';
+        iconClose.style.display = 'block';
+        input.focus();
+        if (!welcomeShown) {
+            addMessage('bot', WELCOME_MESSAGE);
+            welcomeShown = true;
+        }
+    }
+
+    function closeChat() {
+        isOpen = false;
+        panel.inert = true;
+        panel.classList.remove('chat-visible');
+        panel.setAttribute('aria-hidden', 'true');
+        toggle.classList.remove('chat-open');
+        iconOpen.style.display = 'block';
+        iconClose.style.display = 'none';
+        toggle.focus();
+    }
+
+    toggle.addEventListener('click', function () {
+        isOpen ? closeChat() : openChat();
+    });
+    closeBtn.addEventListener('click', closeChat);
+
+    // Close on Escape key
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && isOpen) closeChat();
+    });
+
+    // ---- Message Rendering (XSS-safe: textContent only) ----
+
+    /**
+     * Create a message bubble and append it to the messages area.
+     * Returns the content element for streaming updates.
+     */
+    function addMessage(role, text) {
+        var div = document.createElement('div');
+        div.className = 'chat-msg ' + (role === 'user' ? 'chat-msg-user' : role === 'error' ? 'chat-msg-error' : 'chat-msg-bot');
+        div.textContent = text; // textContent — never innerHTML (LLM02)
+        messagesEl.appendChild(div);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+        return div;
+    }
+
+    function showTyping() {
+        var div = document.createElement('div');
+        div.className = 'chat-typing';
+        div.id = 'chat-typing-indicator';
+        // Build dots with DOM methods — no innerHTML (LLM02)
+        for (var i = 0; i < 3; i++) {
+            div.appendChild(document.createElement('span'));
+        }
+        messagesEl.appendChild(div);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function hideTyping() {
+        var el = document.getElementById('chat-typing-indicator');
+        if (el) el.remove();
+    }
+
+    // ---- Streaming Fetch ----
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (isStreaming) return;
+
+        var text = input.value.trim();
+        if (!text) return;
+
+        // Add user message to UI and conversation
+        addMessage('user', text);
+        conversation.push({ role: 'user', content: text });
+        input.value = '';
+        input.focus();
+
+        sendToAPI();
+    });
+
+    async function sendToAPI() {
+        isStreaming = true;
+        sendBtn.disabled = true;
+        showTyping();
+
+        // Only send last N messages (LLM04)
+        var messagesToSend = conversation.slice(-MAX_HISTORY_SENT);
+
+        try {
+            var response = await fetch(CHAT_API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ messages: messagesToSend }),
+                signal: AbortSignal.timeout(30000), // 30s timeout
+            });
+
+            hideTyping();
+
+            if (response.status === 429) {
+                addMessage('error', 'Too many messages. Please wait a few minutes and try again.');
+                isStreaming = false;
+                sendBtn.disabled = false;
+                return;
+            }
+
+            if (!response.ok) {
+                addMessage('error', 'Something went wrong. Please try again.');
+                isStreaming = false;
+                sendBtn.disabled = false;
+                return;
+            }
+
+            // Create bot message bubble and stream into it
+            var botDiv = addMessage('bot', '');
+            var fullText = '';
+
+            var reader = response.body.getReader();
+            var decoder = new TextDecoder();
+            var buffer = '';
+
+            // Helper: parse SSE lines and extract content deltas
+            function processSSELines(lines) {
+                for (var i = 0; i < lines.length; i++) {
+                    var line = lines[i].trim();
+                    if (!line.startsWith('data: ')) continue;
+
+                    var data = line.slice(6);
+                    if (data === '[DONE]') continue;
+
+                    try {
+                        var parsed = JSON.parse(data);
+                        var delta = parsed.choices && parsed.choices[0] && parsed.choices[0].delta;
+                        if (delta && delta.content) {
+                            fullText += delta.content;
+                            botDiv.textContent = fullText; // textContent — XSS safe
+                            messagesEl.scrollTop = messagesEl.scrollHeight;
+                        }
+                    } catch (_) {
+                        // skip malformed SSE chunks
+                    }
+                }
+            }
+
+            while (true) {
+                var result = await reader.read();
+                if (result.done) break;
+
+                buffer += decoder.decode(result.value, { stream: true });
+
+                var lines = buffer.split('\n');
+                buffer = lines.pop(); // keep incomplete line in buffer
+                processSSELines(lines);
+            }
+
+            // Flush any remaining data in the buffer after stream ends
+            if (buffer.trim()) {
+                processSSELines([buffer]);
+            }
+
+            // Handle empty stream — don't leave a blank bot bubble
+            if (!fullText) {
+                botDiv.textContent = 'No response received. Please try again.';
+                botDiv.className = 'chat-msg chat-msg-error';
+            } else {
+                conversation.push({ role: 'assistant', content: fullText });
+            }
+
+        } catch (err) {
+            hideTyping();
+            if (err.name === 'TimeoutError') {
+                addMessage('error', 'Response timed out. Please try again.');
+            } else {
+                addMessage('error', 'Could not connect. Please check your connection and try again.');
+            }
+        }
+
+        isStreaming = false;
+        sendBtn.disabled = false;
+        if (isOpen) input.focus(); // only focus if panel is still open
+    }
+})();

@@ -1,0 +1,12 @@
+name = "resume-chatbot"
+main = "src/index.js"
+compatibility_date = "2024-12-01"
+
+[vars]
+ALLOWED_ORIGIN = "https://dez727.github.io"
+MODEL = "google/gemini-2.0-flash-001"
+MAX_TOKENS = 500
+
+[[kv_namespaces]]
+binding = "RATE_LIMIT"
+id = "a7d636cde012491fa19c196f6b9fa09d"
