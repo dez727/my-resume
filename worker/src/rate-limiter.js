@@ -5,13 +5,25 @@ const MAX_REQUESTS = 20;
 const WINDOW_MS = 60 * 60 * 1000; // 1 hour
 
 /**
+ * Normalize IP for rate limiting.
+ * IPv6: key on /64 prefix to prevent enumeration bypass.
+ * IPv4: use full address.
+ */
+function normalizeIp(ip) {
+  if (ip.includes(":")) {
+    return ip.split(":").slice(0, 4).join(":") + "::/64";
+  }
+  return ip;
+}
+
+/**
  * Check and increment the request count for an IP.
  * @param {string} ip - Client IP address
  * @param {KVNamespace} kv - Cloudflare KV binding
  * @returns {{ allowed: boolean, remaining: number }}
  */
 export async function checkRateLimit(ip, kv) {
-  const key = `rl:${ip}`;
+  const key = `rl:${normalizeIp(ip)}`;
   const now = Date.now();
 
   const raw = await kv.get(key, "json");

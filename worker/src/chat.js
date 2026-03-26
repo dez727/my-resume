@@ -86,11 +86,18 @@ export async function streamChat(messages, env) {
   // Truncate history to last MAX_HISTORY messages (LLM04)
   const trimmed = messages.slice(-MAX_HISTORY);
 
+  // Tag user messages with structural delimiters to reduce prompt injection (LLM01)
+  const tagged = trimmed.map((m) =>
+    m.role === "user"
+      ? { ...m, content: `[USER INPUT]\n${m.content}\n[/USER INPUT]` }
+      : m
+  );
+
   const payload = {
-    model: env.MODEL || "google/gemini-flash-1.5",
+    model: env.MODEL || "google/gemini-2.0-flash-001",
     max_tokens: parseInt(env.MAX_TOKENS, 10) || 500,
     stream: true,
-    messages: [{ role: "system", content: SYSTEM_PROMPT }, ...trimmed],
+    messages: [{ role: "system", content: SYSTEM_PROMPT }, ...tagged],
   };
 
   const response = await fetch(
@@ -108,8 +115,10 @@ export async function streamChat(messages, env) {
   );
 
   if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`OpenRouter ${response.status}: ${text}`);
+    // Log full error for debugging but only throw sanitized message
+    const body = await response.text();
+    console.error(`OpenRouter error ${response.status}:`, body);
+    throw new Error(`upstream error ${response.status}`);
   }
 
   return response.body;

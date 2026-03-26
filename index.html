@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Desmond Adongo | Digital Marketer & AI Consultant</title>
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://*.workers.dev; img-src 'self' data:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://resume-chatbot.dezad727.workers.dev; img-src 'self' data:;">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <!--
@@ -93,7 +93,7 @@
                         </a>
                     </div>
 
-                    <button class="chat-cta" onclick="document.getElementById('chat-toggle').click()">
+                    <button class="chat-cta" id="chat-cta-btn">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                         </svg>
@@ -133,12 +133,8 @@
                     </ul>
                 </div>
 
-                <button class="expand-btn" onclick="toggleDetails(this)">
-                    <!--
-                        Button to expand/collapse details
-                        onclick="toggleDetails(this)" calls JavaScript function
-                        'this' refers to the button element itself
-                    -->
+                <button class="expand-btn">
+                    <!-- Button to expand/collapse details -->
                     Show details
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
                 </button>
@@ -159,7 +155,7 @@
                         <li>Represent Board interests to legislators, government officials, and business leaders</li>
                     </ul>
                 </div>
-                <button class="expand-btn" onclick="toggleDetails(this)">
+                <button class="expand-btn">
                     Show details
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
                 </button>
@@ -179,7 +175,7 @@
                         <li>Built automation workflows expanding 50+ AI intent coverage and reducing manual escalations</li>
                     </ul>
                 </div>
-                <button class="expand-btn" onclick="toggleDetails(this)">
+                <button class="expand-btn">
                     Show details
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
                 </button>
@@ -198,7 +194,7 @@
                         <li>Conducted and transcribed 60+ interviews, applying qualitative coding to synthesize findings</li>
                     </ul>
                 </div>
-                <button class="expand-btn" onclick="toggleDetails(this)">
+                <button class="expand-btn">
                     Show details
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
                 </button>
@@ -219,7 +215,7 @@
                         <li>Managed satellite contact center training partnership supporting 50+ virtual sessions</li>
                     </ul>
                 </div>
-                <button class="expand-btn" onclick="toggleDetails(this)">
+                <button class="expand-btn">
                     Show details
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
                 </button>

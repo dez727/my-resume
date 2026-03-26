@@ -105,7 +105,10 @@ export default {
     }
 
     // Rate limiting — only counted for valid requests
-    const ip = request.headers.get("cf-connecting-ip") || "unknown";
+    const ip = request.headers.get("cf-connecting-ip");
+    if (!ip) {
+      return jsonResponse({ error: "unable to identify client" }, 400, env);
+    }
     const { allowed, remaining } = await checkRateLimit(ip, env.RATE_LIMIT);
     if (!allowed) {
       return jsonResponse(

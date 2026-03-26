@@ -57,49 +57,20 @@ document.querySelectorAll('.nav-links a').forEach(link => {
 // ===================================================================
 // EXPAND/COLLAPSE EXPERIENCE DETAILS
 //
-// Toggles visibility of job description details. Called from HTML
-// onclick attribute: <button onclick="toggleDetails(this)">
+// Toggles visibility of job description details. Bound via
+// addEventListener (no inline onclick — required for strict CSP).
 // ===================================================================
 
 function toggleDetails(btn) {
-    /*
-     * FUNCTION PARAMETERS
-     * 'btn' is the button element that was clicked
-     * Passed automatically by 'this' in onclick="toggleDetails(this)"
-     */
-
-    /*
-     * DOM TRAVERSAL - Finding Related Elements
-     * previousElementSibling: Gets the element immediately before this one in HTML
-     * In our HTML structure: <div class="experience-details"></div> comes before <button>
-     * So btn.previousElementSibling gives us the details div
-     */
     const details = btn.previousElementSibling;
-
-    /*
-     * TOGGLE AND CAPTURE RETURN VALUE
-     * classList.toggle() returns a boolean:
-     * - true if class was added (now expanded)
-     * - false if class was removed (now collapsed)
-     * We store this to update button text accordingly
-     */
     const isExpanded = details.classList.toggle('expanded');
-
-    /*
-     * TOGGLE BUTTON STATE
-     * Adds/removes 'expanded' class from button
-     * CSS rotates the chevron icon 180° when button has this class
-     */
     btn.classList.toggle('expanded');
-
-    /*
-     * UPDATE BUTTON TEXT
-     * Ternary operator: condition ? valueIfTrue : valueIfFalse
-     * firstChild.textContent: The text inside the button (not the SVG icon)
-     * Extra space after text maintains spacing before icon
-     */
     btn.firstChild.textContent = isExpanded ? 'Hide details ' : 'Show details ';
 }
+
+document.querySelectorAll('.expand-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () { toggleDetails(this); });
+});
 
 // ===================================================================
 // SMOOTH SCROLL WITH HEADER OFFSET
@@ -355,6 +326,12 @@ window.addEventListener('scroll', function scrollHandler() {
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && isOpen) closeChat();
     });
+
+    // Hero CTA button opens chat
+    var ctaBtn = document.getElementById('chat-cta-btn');
+    if (ctaBtn) {
+        ctaBtn.addEventListener('click', function () { toggle.click(); });
+    }
 
     // ---- Suggested Questions ----
 
@@ -632,6 +609,10 @@ window.addEventListener('scroll', function scrollHandler() {
                 renderMarkdown(botDiv, fullText);
                 messagesEl.scrollTop = messagesEl.scrollHeight;
                 conversation.push({ role: 'assistant', content: fullText });
+                // Cap conversation to prevent unbounded memory growth
+                if (conversation.length > MAX_HISTORY_SENT * 2) {
+                    conversation = conversation.slice(-MAX_HISTORY_SENT * 2);
+                }
             }
 
         } catch (err) {
