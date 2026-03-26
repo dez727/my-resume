@@ -1150,6 +1150,32 @@ footer {
     text-align: center;
 }
 
+/* Suggested questions */
+.chat-suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-self: flex-start;
+    padding: 2px 0;
+}
+
+.chat-suggestion {
+    padding: 6px 12px;
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 16px;
+    font-size: 0.8125rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.chat-suggestion:hover {
+    background: var(--accent);
+    color: #fff;
+}
+
 /* Typing indicator */
 .chat-typing {
     display: flex;

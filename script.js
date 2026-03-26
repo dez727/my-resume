@@ -291,6 +291,12 @@ window.addEventListener('scroll', function scrollHandler() {
         "experience, skills, and projects. For the most accurate picture, " +
         "also review the resume sections above. What would you like to know?";
 
+    const SUGGESTED_QUESTIONS = [
+        "What's Desmond's experience with AI?",
+        "Tell me about his leadership roles",
+        "What projects has he built?",
+    ];
+
     // ---- DOM References ----
     const widget = document.getElementById('chat-widget');
     const toggle = document.getElementById('chat-toggle');
@@ -324,6 +330,7 @@ window.addEventListener('scroll', function scrollHandler() {
         input.focus();
         if (!welcomeShown) {
             addMessage('bot', WELCOME_MESSAGE);
+            showSuggestions();
             welcomeShown = true;
         }
     }
@@ -348,6 +355,32 @@ window.addEventListener('scroll', function scrollHandler() {
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && isOpen) closeChat();
     });
+
+    // ---- Suggested Questions ----
+
+    function showSuggestions() {
+        var container = document.createElement('div');
+        container.className = 'chat-suggestions';
+        SUGGESTED_QUESTIONS.forEach(function (q) {
+            var btn = document.createElement('button');
+            btn.className = 'chat-suggestion';
+            btn.textContent = q;
+            btn.addEventListener('click', function () {
+                removeSuggestions();
+                addMessage('user', q);
+                conversation.push({ role: 'user', content: q });
+                sendToAPI();
+            });
+            container.appendChild(btn);
+        });
+        messagesEl.appendChild(container);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function removeSuggestions() {
+        var el = messagesEl.querySelector('.chat-suggestions');
+        if (el) el.remove();
+    }
 
     // ---- Message Rendering (XSS-safe: textContent only) ----
 
@@ -391,6 +424,7 @@ window.addEventListener('scroll', function scrollHandler() {
         if (!text) return;
 
         // Add user message to UI and conversation
+        removeSuggestions();
         addMessage('user', text);
         conversation.push({ role: 'user', content: text });
         input.value = '';
