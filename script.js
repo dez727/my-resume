@@ -382,7 +382,108 @@ window.addEventListener('scroll', function scrollHandler() {
         if (el) el.remove();
     }
 
-    // ---- Message Rendering (XSS-safe: textContent only) ----
+    // ---- Safe Markdown Renderer (XSS-safe: DOM-only, no innerHTML) ----
+    // Allowlist: **bold**, *italic*, `code`, bullet lists (- item),
+    // and section deep links [text](#id)
+
+    var SECTION_IDS = ['hero', 'experience', 'education', 'skills', 'projects'];
+
+    function renderMarkdown(container, text) {
+        container.textContent = '';
+        var lines = text.split('\n');
+        var i = 0;
+
+        while (i < lines.length) {
+            var line = lines[i];
+
+            // Bullet list: group consecutive "- " lines into a <ul>
+            if (/^\s*[-*]\s/.test(line)) {
+                var ul = document.createElement('ul');
+                ul.className = 'chat-md-list';
+                while (i < lines.length && /^\s*[-*]\s/.test(lines[i])) {
+                    var li = document.createElement('li');
+                    renderInline(li, lines[i].replace(/^\s*[-*]\s+/, ''));
+                    ul.appendChild(li);
+                    i++;
+                }
+                container.appendChild(ul);
+                continue;
+            }
+
+            // Blank line — skip
+            if (line.trim() === '') { i++; continue; }
+
+            // Regular paragraph
+            var p = document.createElement('p');
+            p.className = 'chat-md-p';
+            renderInline(p, line);
+            container.appendChild(p);
+            i++;
+        }
+    }
+
+    function renderInline(parent, text) {
+        // Regex matches: **bold**, *italic*, `code`, [text](#anchor)
+        var pattern = /(\*\*(.+?)\*\*|\*(.+?)\*|`(.+?)`|\[(.+?)\]\(#([\w-]+)\))/g;
+        var last = 0;
+        var match;
+
+        while ((match = pattern.exec(text)) !== null) {
+            // Plain text before this match
+            if (match.index > last) {
+                parent.appendChild(document.createTextNode(text.slice(last, match.index)));
+            }
+
+            if (match[2]) {
+                // **bold**
+                var strong = document.createElement('strong');
+                strong.textContent = match[2];
+                parent.appendChild(strong);
+            } else if (match[3]) {
+                // *italic*
+                var em = document.createElement('em');
+                em.textContent = match[3];
+                parent.appendChild(em);
+            } else if (match[4]) {
+                // `code`
+                var code = document.createElement('code');
+                code.className = 'chat-md-code';
+                code.textContent = match[4];
+                parent.appendChild(code);
+            } else if (match[5] && match[6]) {
+                // [text](#section-id) — deep link
+                var sectionId = match[6];
+                if (SECTION_IDS.indexOf(sectionId) !== -1) {
+                    var a = document.createElement('a');
+                    a.textContent = match[5];
+                    a.href = '#' + sectionId;
+                    a.className = 'chat-md-link';
+                    a.addEventListener('click', (function (id) {
+                        return function (ev) {
+                            ev.preventDefault();
+                            var target = document.getElementById(id);
+                            if (target) {
+                                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }
+                        };
+                    })(sectionId));
+                    parent.appendChild(a);
+                } else {
+                    // Not a valid section — render as plain text
+                    parent.appendChild(document.createTextNode(match[5]));
+                }
+            }
+
+            last = match.index + match[0].length;
+        }
+
+        // Remaining plain text
+        if (last < text.length) {
+            parent.appendChild(document.createTextNode(text.slice(last)));
+        }
+    }
+
+    // ---- Message Rendering ----
 
     /**
      * Create a message bubble and append it to the messages area.
@@ -391,7 +492,13 @@ window.addEventListener('scroll', function scrollHandler() {
     function addMessage(role, text) {
         var div = document.createElement('div');
         div.className = 'chat-msg ' + (role === 'user' ? 'chat-msg-user' : role === 'error' ? 'chat-msg-error' : 'chat-msg-bot');
-        div.textContent = text; // textContent — never innerHTML (LLM02)
+
+        if (role === 'bot' && text) {
+            renderMarkdown(div, text);
+        } else {
+            div.textContent = text;
+        }
+
         messagesEl.appendChild(div);
         messagesEl.scrollTop = messagesEl.scrollHeight;
         return div;
@@ -467,6 +574,7 @@ window.addEventListener('scroll', function scrollHandler() {
 
             // Create bot message bubble and stream into it
             var botDiv = addMessage('bot', '');
+            botDiv.classList.add('chat-streaming');
             var fullText = '';
 
             var reader = response.body.getReader();
@@ -487,7 +595,7 @@ window.addEventListener('scroll', function scrollHandler() {
                         var delta = parsed.choices && parsed.choices[0] && parsed.choices[0].delta;
                         if (delta && delta.content) {
                             fullText += delta.content;
-                            botDiv.textContent = fullText; // textContent — XSS safe
+                            botDiv.textContent = fullText;
                             messagesEl.scrollTop = messagesEl.scrollHeight;
                         }
                     } catch (_) {
@@ -512,11 +620,17 @@ window.addEventListener('scroll', function scrollHandler() {
                 processSSELines([buffer]);
             }
 
+            // Remove streaming cursor
+            botDiv.classList.remove('chat-streaming');
+
             // Handle empty stream — don't leave a blank bot bubble
             if (!fullText) {
                 botDiv.textContent = 'No response received. Please try again.';
                 botDiv.className = 'chat-msg chat-msg-error';
             } else {
+                // Render final markdown (during stream it was plain text)
+                renderMarkdown(botDiv, fullText);
+                messagesEl.scrollTop = messagesEl.scrollHeight;
                 conversation.push({ role: 'assistant', content: fullText });
             }
 

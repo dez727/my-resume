@@ -1,5 +1,6 @@
 import { streamChat } from "./chat.js";
 import { checkRateLimit } from "./rate-limiter.js";
+import { logTopic } from "./analytics.js";
 
 // Maximum request body size in bytes (LLM04)
 const MAX_BODY_BYTES = 2048;
@@ -71,7 +72,7 @@ function validateMessages(raw) {
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
     // CORS preflight
@@ -112,6 +113,12 @@ export default {
         429,
         env
       );
+    }
+
+    // Log anonymized topic (fire-and-forget, never blocks response)
+    const lastUserMsg = validation.messages.filter(m => m.role === "user").pop();
+    if (lastUserMsg) {
+      ctx.waitUntil(logTopic(lastUserMsg.content, env.RATE_LIMIT));
     }
 
     // Stream the LLM response
