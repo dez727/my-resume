@@ -11,7 +11,7 @@ const MAX_MESSAGE_LENGTH = 500;
  * Return CORS headers scoped to the allowed origin.
  */
 function corsHeaders(env) {
-  const origin = env.ALLOWED_ORIGIN || "https://dez727.github.io";
+  const origin = env.ALLOWED_ORIGIN || "https://resume.addez.win";
   return {
     "Access-Control-Allow-Origin": origin,
     "Access-Control-Allow-Methods": "POST, OPTIONS",

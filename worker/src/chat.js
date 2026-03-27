@@ -107,7 +107,7 @@ export async function streamChat(messages, env) {
       headers: {
         Authorization: `Bearer ${env.OPENROUTER_API_KEY}`,
         "Content-Type": "application/json",
-        "HTTP-Referer": env.ALLOWED_ORIGIN || "https://dez727.github.io",
+        "HTTP-Referer": env.ALLOWED_ORIGIN || "https://resume.addez.win",
         "X-Title": "Desmond Adongo Resume Chatbot",
       },
       body: JSON.stringify(payload),

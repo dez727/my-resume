@@ -84,7 +84,13 @@ function toggleDetails(btn) {
     const details = btn.previousElementSibling;
     const isExpanded = details.classList.toggle('expanded');
     btn.classList.toggle('expanded');
-    btn.firstChild.textContent = isExpanded ? 'Hide details ' : 'Show details ';
+    // Walk child nodes to find the text node — firstChild may be a comment or whitespace node
+    for (var node of btn.childNodes) {
+        if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
+            node.textContent = isExpanded ? 'Hide details ' : 'Show details ';
+            break;
+        }
+    }
 }
 
 document.querySelectorAll('.expand-btn').forEach(function (btn) {
@@ -146,14 +152,14 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         /*
          * Calculate final scroll position:
          * - elementPosition: Where element is now relative to viewport top
-         * - window.pageYOffset: How far we've already scrolled from page top
+         * - window.window.scrollY: How far we've already scrolled from page top
          * - headerOffset: Space to leave for fixed header
          *
          * Example calculation:
          * If element is 500px from viewport top, we've scrolled 1000px,
          * and header is 80px: final position = 500 + 1000 - 80 = 1420px from page top
          */
-        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        const offsetPosition = elementPosition + window.window.scrollY - headerOffset;
 
         /*
          * SCROLL TO CALCULATED POSITION
@@ -220,14 +226,14 @@ window.addEventListener('scroll', function scrollHandler() {
 
         /*
          * DETECT IF SECTION IS IN VIEW
-         * pageYOffset: How far page has scrolled from top (global variable)
+         * window.scrollY: How far page has scrolled from top (global variable)
          * Equivalent to window.scrollY
          *
          * Logic: If we've scrolled past section top (minus 150px buffer),
          * consider that section as "current"
          * The 150px buffer ensures section activates before it's fully at top
          */
-        if (pageYOffset >= sectionTop - 150) {
+        if (window.scrollY >= sectionTop - 150) {
             /*
              * getAttribute('id'): Gets section's ID (e.g., "experience")
              * Store the ID - last section passing the check becomes current

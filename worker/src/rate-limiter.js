@@ -21,6 +21,11 @@ function normalizeIp(ip) {
  * @param {string} ip - Client IP address
  * @param {KVNamespace} kv - Cloudflare KV binding
  * @returns {{ allowed: boolean, remaining: number }}
+ *
+ * Known limitation: KV has no compare-and-swap, so two concurrent requests
+ * from the same IP can both read count=N and both write count=N+1, allowing
+ * a small burst above the limit. Acceptable for a low-traffic resume chatbot;
+ * fix with Durable Objects if abuse becomes a concern.
  */
 export async function checkRateLimit(ip, kv) {
   const key = `rl:${normalizeIp(ip)}`;

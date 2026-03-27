@@ -87,11 +87,24 @@ export const resumeData = {
     credentials: [
       "Minor: Information Systems",
       "Certificate: Digital Marketing",
+      "Certificate: Web Design",
     ],
   },
 
   skills: {
+    "Digital Marketing": [
+      "Google Analytics 4",
+      "Looker Studio",
+      "HubSpot CRM",
+      "Canva",
+      "WordPress",
+      "SEO / SEM",
+      "Email Marketing",
+      "Social Media Management",
+      "Campaign Planning",
+    ],
     "AI & Automation": [
+      "Context Engineering",
       "Prompt Design",
       "System Prompts",
       "Function Calling",
@@ -106,6 +119,7 @@ export const resumeData = {
       "Python",
       "SQL",
       "Java",
+      "JavaScript",
       "HTML",
       "CSS",
       "Text Extraction",
@@ -135,10 +149,30 @@ export const resumeData = {
       "Networking",
       "Windows",
     ],
-    Certifications: ["HubSpot Inbound", "Agile Project Management"],
+    Certifications: [
+      "HubSpot Inbound",
+      "Agile Project Management",
+      "Google Analytics 4",
+      "Google Looker Studio (In Progress)",
+      "HubSpot Digital Marketing (In Progress)",
+    ],
   },
 
   projects: [
+    {
+      name: "Digital Marketing Portfolio — Active Spring 2026",
+      description:
+        "Currently executing three applied marketing projects at UW Oshkosh: a full social media campaign for a real client organization covering strategy, content creation, visual storytelling, and performance measurement (AMP 440); a Digital Marketing Simternship covering paid search, SEO, landing page optimization, and email campaigns (MKT 363); and a website and social media audit with GA4 and Looker Studio dashboards (MKT 428). Expected completion May 2026.",
+      tech: [
+        "Social Media Strategy",
+        "Content Creation",
+        "SEO",
+        "Email Marketing",
+        "Google Analytics 4",
+        "Looker Studio",
+        "Campaign Management",
+      ],
+    },
     {
       name: "ITSM Virtual Agent Modernization",
       description:
