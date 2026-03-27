@@ -11,7 +11,8 @@ export const resumeData = {
     "actually solve problems. Born in Ghana, driven by the belief that technology should leave the world " +
     "better than we found it.",
   contact: {
-    email: "addez2@outlook.com",
+    // Email intentionally omitted from system prompt — directs visitors to the page
+    // contact section where it is assembled at runtime (prevents email harvesting via API).
     linkedin: "https://www.linkedin.com/in/desmondadongo",
   },
 

@@ -10,3 +10,7 @@ MAX_TOKENS = 500
 [[kv_namespaces]]
 binding = "RATE_LIMIT"
 id = "a7d636cde012491fa19c196f6b9fa09d"
+
+[[kv_namespaces]]
+binding = "ANALYTICS"
+id = "bf8aba59cdb94c458b238a80e1a7d69d"

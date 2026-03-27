@@ -121,7 +121,7 @@ export default {
     // Log anonymized topic (fire-and-forget, never blocks response)
     const lastUserMsg = validation.messages.filter(m => m.role === "user").pop();
     if (lastUserMsg) {
-      ctx.waitUntil(logTopic(lastUserMsg.content, env.RATE_LIMIT));
+      ctx.waitUntil(logTopic(lastUserMsg.content, env.ANALYTICS));
     }
 
     // Stream the LLM response
