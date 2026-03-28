@@ -2,10 +2,12 @@ import { streamChat } from "./chat.js";
 import { checkRateLimit } from "./rate-limiter.js";
 import { logTopic } from "./analytics.js";
 
-// Maximum request body size in bytes (LLM04)
-const MAX_BODY_BYTES = 2048;
-// Maximum length of a single user message (LLM01)
-const MAX_MESSAGE_LENGTH = 500;
+// Maximum request body size in bytes (LLM04).
+// Sized for a few 500-character user turns plus JSON overhead and multibyte UTF-8.
+const MAX_BODY_BYTES = 8192;
+const MAX_RAW_MESSAGES = 6;
+const MAX_HISTORY_MESSAGES = 3;
+const MAX_USER_MESSAGE_LENGTH = 500;
 
 /**
  * Return CORS headers scoped to the allowed origin.
@@ -47,11 +49,11 @@ function validateMessages(raw) {
   if (!Array.isArray(raw) || raw.length === 0) {
     return { ok: false, error: "messages must be a non-empty array" };
   }
-  if (raw.length > 20) {
-    return { ok: false, error: "too many messages" };
+  if (raw.length > MAX_RAW_MESSAGES) {
+    return { ok: false, error: `too many messages (max ${MAX_RAW_MESSAGES})` };
   }
 
-  const cleaned = [];
+  const userMessages = [];
   for (const msg of raw) {
     if (!msg || typeof msg.content !== "string" || typeof msg.role !== "string") {
       return { ok: false, error: "invalid message format" };
@@ -59,16 +61,25 @@ function validateMessages(raw) {
     if (!["user", "assistant"].includes(msg.role)) {
       return { ok: false, error: "invalid role" };
     }
-    const content = sanitizeInput(msg.content);
-    if (content.length === 0) {
-      return { ok: false, error: "empty message" };
+    // Assistant turns are accepted for backward compatibility with older
+    // frontends, but they are never forwarded to the model.
+    if (msg.role === "user") {
+      const content = sanitizeInput(msg.content);
+      if (content.length === 0) {
+        return { ok: false, error: "empty message" };
+      }
+      if (content.length > MAX_USER_MESSAGE_LENGTH) {
+        return { ok: false, error: `message exceeds ${MAX_USER_MESSAGE_LENGTH} characters` };
+      }
+      userMessages.push({ role: "user", content });
     }
-    if (content.length > MAX_MESSAGE_LENGTH) {
-      return { ok: false, error: `message exceeds ${MAX_MESSAGE_LENGTH} characters` };
-    }
-    cleaned.push({ role: msg.role, content });
   }
-  return { ok: true, messages: cleaned };
+
+  if (userMessages.length === 0) {
+    return { ok: false, error: "at least one user message is required" };
+  }
+
+  return { ok: true, messages: userMessages.slice(-MAX_HISTORY_MESSAGES) };
 }
 
 export default {
@@ -119,7 +130,7 @@ export default {
     }
 
     // Log anonymized topic (fire-and-forget, never blocks response)
-    const lastUserMsg = validation.messages.filter(m => m.role === "user").pop();
+    const lastUserMsg = validation.messages[validation.messages.length - 1];
     if (lastUserMsg) {
       ctx.waitUntil(logTopic(lastUserMsg.content, env.ANALYTICS));
     }

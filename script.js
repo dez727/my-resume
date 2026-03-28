@@ -281,7 +281,8 @@ window.addEventListener('scroll', function scrollHandler() {
     // ---- Configuration ----
     // Replace with your deployed Cloudflare Worker URL
     const CHAT_API_URL = 'https://resume-chatbot.dezad727.workers.dev/api/chat';
-    const MAX_HISTORY_SENT = 6;
+    const MAX_USER_HISTORY_SENT = 3;
+    const MAX_MESSAGE_LENGTH = 500;
     const WELCOME_MESSAGE =
         "Hi! I'm an AI assistant that can answer questions about Desmond's " +
         "experience, skills, and projects. For the most accurate picture, " +
@@ -309,7 +310,9 @@ window.addEventListener('scroll', function scrollHandler() {
     // ---- State ----
     let isOpen = false;
     let isStreaming = false;
-    let conversation = []; // {role, content}[]
+    // Store only successful prior user turns.
+    // Assistant replies are rendered in the UI but not resent to the API.
+    let userHistory = []; // {role: 'user', content: string}[]
     let welcomeShown = false;
 
     // ---- Open / Close ----
@@ -371,8 +374,7 @@ window.addEventListener('scroll', function scrollHandler() {
             btn.addEventListener('click', function () {
                 removeSuggestions();
                 addMessage('user', q);
-                conversation.push({ role: 'user', content: q });
-                sendToAPI();
+                sendToAPI(q);
             });
             container.appendChild(btn);
         });
@@ -524,6 +526,15 @@ window.addEventListener('scroll', function scrollHandler() {
         if (el) el.remove();
     }
 
+    async function postChat(messages) {
+        return fetch(CHAT_API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ messages: messages }),
+            signal: AbortSignal.timeout(30000), // 30s timeout
+        });
+    }
+
     // ---- Streaming Fetch ----
 
     form.addEventListener('submit', function (e) {
@@ -532,37 +543,50 @@ window.addEventListener('scroll', function scrollHandler() {
 
         var text = input.value.trim();
         if (!text) return;
+        if (text.length > MAX_MESSAGE_LENGTH) {
+            addMessage('error', 'Please keep your message under 500 characters.');
+            return;
+        }
 
-        // Add user message to UI and conversation
+        // Add user message to UI
         removeSuggestions();
         addMessage('user', text);
-        conversation.push({ role: 'user', content: text });
         input.value = '';
         input.focus();
 
-        sendToAPI();
+        sendToAPI(text);
     });
 
-    async function sendToAPI() {
+    async function sendToAPI(userText) {
         isStreaming = true;
         sendBtn.disabled = true;
         showTyping();
 
-        // Only send last N messages (LLM04)
-        var messagesToSend = conversation.slice(-MAX_HISTORY_SENT);
+        // Only send the last N successful user turns plus the current one.
+        var messagesToSend = userHistory
+            .concat({ role: 'user', content: userText })
+            .slice(-MAX_USER_HISTORY_SENT);
+        var usedFallback = false;
 
         try {
-            var response = await fetch(CHAT_API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ messages: messagesToSend }),
-                signal: AbortSignal.timeout(30000), // 30s timeout
-            });
+            var response = await postChat(messagesToSend);
+
+            if (!response.ok && messagesToSend.length > 1 && response.status !== 429) {
+                response = await postChat([{ role: 'user', content: userText }]);
+                usedFallback = response.ok;
+            }
 
             hideTyping();
 
             if (response.status === 429) {
                 addMessage('error', 'Too many messages. Please wait a few minutes and try again.');
+                isStreaming = false;
+                sendBtn.disabled = false;
+                return;
+            }
+
+            if (response.status === 413) {
+                addMessage('error', 'That conversation context was too large. Please try asking again.');
                 isStreaming = false;
                 sendBtn.disabled = false;
                 return;
@@ -634,11 +658,9 @@ window.addEventListener('scroll', function scrollHandler() {
                 // Render final markdown (during stream it was plain text)
                 renderMarkdown(botDiv, fullText);
                 messagesEl.scrollTop = messagesEl.scrollHeight;
-                conversation.push({ role: 'assistant', content: fullText });
-                // Cap conversation to prevent unbounded memory growth
-                if (conversation.length > MAX_HISTORY_SENT * 2) {
-                    conversation = conversation.slice(-MAX_HISTORY_SENT * 2);
-                }
+                userHistory = usedFallback
+                    ? [{ role: 'user', content: userText }]
+                    : messagesToSend;
             }
 
         } catch (err) {

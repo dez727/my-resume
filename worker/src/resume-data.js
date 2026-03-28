@@ -4,12 +4,12 @@
 
 export const resumeData = {
   name: "Desmond Adongo",
-  title: "AI Consultant & UW System Regent",
+  title: "Digital Marketer · AI Consultant · UW System Regent",
   summary:
-    "I bridge technology and people — whether that's helping small businesses harness AI to work smarter, " +
-    "shaping higher education policy for 160,000+ students across Wisconsin, or building systems that " +
-    "actually solve problems. Born in Ghana, driven by the belief that technology should leave the world " +
-    "better than we found it.",
+    "I bridge strategy and technology — whether that's building digital marketing campaigns that tell a brand's story, " +
+    "helping small businesses harness AI to work smarter, or shaping higher education policy for 160,000+ students " +
+    "across Wisconsin. Born in Ghana, driven by the belief that good communication and smart systems should be " +
+    "accessible to everyone.",
   contact: {
     // Email intentionally omitted from system prompt — directs visitors to the page
     // contact section where it is assembled at runtime (prevents email harvesting via API).
@@ -106,8 +106,6 @@ export const resumeData = {
     ],
     "AI & Automation": [
       "Context Engineering",
-      "Prompt Design",
-      "System Prompts",
       "Function Calling",
       "LLM Evaluation",
       "n8n",
@@ -140,7 +138,6 @@ export const resumeData = {
       "Power Automate",
       "HubSpot",
       "ArcGIS",
-      "Google Analytics 4",
     ],
     "IT & Infrastructure": [
       "Docker",

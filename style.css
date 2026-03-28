@@ -1121,6 +1121,7 @@ footer {
     padding: 0.625rem 0.875rem;
     border-radius: 10px;
     font-size: 0.875rem;
+    font-family: inherit;
     line-height: 1.55;
     word-wrap: break-word;
     overflow-wrap: break-word;
@@ -1155,6 +1156,12 @@ footer {
 }
 
 /* Markdown styles inside bot messages */
+.chat-msg-bot :where(p, ul, li, a, strong, em) {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}
+
 .chat-md-p {
     margin: 0 0 0.4em;
 }
@@ -1189,6 +1196,11 @@ footer {
 
 .chat-md-list li {
     margin-bottom: 0.2em;
+}
+
+.chat-md-list li::marker {
+    font-family: inherit;
+    color: var(--accent);
 }
 
 .chat-md-link {
