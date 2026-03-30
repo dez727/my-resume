@@ -49,7 +49,8 @@ navToggle.addEventListener('click', () => {
      *
      * CSS handles the visual animation (.nav-links.active styles)
      */
-    navLinks.classList.toggle('active');
+    const isOpen = navLinks.classList.toggle('active');
+    navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
 });
 
 /*
@@ -84,6 +85,7 @@ function toggleDetails(btn) {
     const details = btn.previousElementSibling;
     const isExpanded = details.classList.toggle('expanded');
     btn.classList.toggle('expanded');
+    btn.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
     // Walk child nodes to find the text node — firstChild may be a comment or whitespace node
     for (var node of btn.childNodes) {
         if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
@@ -94,6 +96,7 @@ function toggleDetails(btn) {
 }
 
 document.querySelectorAll('.expand-btn').forEach(function (btn) {
+    btn.setAttribute('aria-expanded', 'false');
     btn.addEventListener('click', function () { toggleDetails(this); });
 });
 
@@ -253,6 +256,7 @@ window.addEventListener('scroll', function scrollHandler() {
          * Setting to empty string removes inline style, reverts to CSS default
          */
         item.style.color = '';
+        item.removeAttribute('aria-current');
 
         /*
          * HIGHLIGHT MATCHING LINK
@@ -266,6 +270,7 @@ window.addEventListener('scroll', function scrollHandler() {
              * This works because CSS variables are accessible via JS style property
              */
             item.style.color = 'var(--accent)';
+            item.setAttribute('aria-current', 'page');
         }
     });
 });
@@ -325,6 +330,7 @@ window.addEventListener('scroll', function scrollHandler() {
         panel.classList.add('chat-visible');
         panel.setAttribute('aria-hidden', 'false');
         toggle.classList.add('chat-open');
+        toggle.setAttribute('aria-expanded', 'true');
         iconOpen.style.display = 'none';
         iconClose.style.display = 'block';
         input.focus();
@@ -341,6 +347,7 @@ window.addEventListener('scroll', function scrollHandler() {
         panel.classList.remove('chat-visible');
         panel.setAttribute('aria-hidden', 'true');
         toggle.classList.remove('chat-open');
+        toggle.setAttribute('aria-expanded', 'false');
         iconOpen.style.display = 'block';
         iconClose.style.display = 'none';
         toggle.focus();
