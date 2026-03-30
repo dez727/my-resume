@@ -39,19 +39,21 @@ const navLinks = document.querySelector('.nav-links');    // Navigation menu
  * 1. Event type: 'click' - fires when user clicks element
  * 2. Handler function: Arrow function (() => {}) that runs on click
  */
-navToggle.addEventListener('click', () => {
-    /*
-     * TOGGLE 'ACTIVE' CLASS
-     * classList.toggle() adds or removes a CSS class:
-     * - If class exists: removes it (menu closes)
-     * - If class doesn't exist: adds it (menu opens)
-     * Returns: true if class was added, false if removed
-     *
-     * CSS handles the visual animation (.nav-links.active styles)
-     */
-    const isOpen = navLinks.classList.toggle('active');
-    navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-});
+if (navToggle && navLinks) {
+    navToggle.addEventListener('click', () => {
+        /*
+         * TOGGLE 'ACTIVE' CLASS
+         * classList.toggle() adds or removes a CSS class:
+         * - If class exists: removes it (menu closes)
+         * - If class doesn't exist: adds it (menu opens)
+         * Returns: true if class was added, false if removed
+         *
+         * CSS handles the visual animation (.nav-links.active styles)
+         */
+        const isOpen = navLinks.classList.toggle('active');
+        navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+}
 
 /*
  * AUTO-CLOSE MENU WHEN LINK CLICKED
@@ -69,8 +71,11 @@ document.querySelectorAll('.nav-links a').forEach(link => {
          * classList.remove() removes class (always)
          * Unlike toggle(), this only removes - doesn't add
          * Result: Menu always closes when any link is clicked
-         */
+        */
         navLinks.classList.remove('active');
+        if (navToggle) {
+            navToggle.setAttribute('aria-expanded', 'false');
+        }
     });
 });
 
@@ -82,7 +87,11 @@ document.querySelectorAll('.nav-links a').forEach(link => {
 // ===================================================================
 
 function toggleDetails(btn) {
-    const details = btn.previousElementSibling;
+    const detailsId = btn.getAttribute('aria-controls');
+    const details = detailsId ? document.getElementById(detailsId) : btn.previousElementSibling;
+    if (!details) {
+        return;
+    }
     const isExpanded = details.classList.toggle('expanded');
     btn.classList.toggle('expanded');
     btn.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
@@ -96,6 +105,10 @@ function toggleDetails(btn) {
 }
 
 document.querySelectorAll('.expand-btn').forEach(function (btn) {
+    const details = btn.previousElementSibling;
+    if (details && details.id) {
+        btn.setAttribute('aria-controls', details.id);
+    }
     btn.setAttribute('aria-expanded', 'false');
     btn.addEventListener('click', function () { toggleDetails(this); });
 });
@@ -136,7 +149,11 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
          * this.getAttribute('href') gets href value (e.g., "#experience")
          * querySelector() finds element with that ID
          */
-        const target = document.querySelector(this.getAttribute('href'));
+        const targetSelector = this.getAttribute('href');
+        const target = targetSelector ? document.querySelector(targetSelector) : null;
+        if (!target) {
+            return;
+        }
 
         /*
          * CALCULATE SCROLL POSITION
@@ -162,7 +179,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
          * If element is 500px from viewport top, we've scrolled 1000px,
          * and header is 80px: final position = 500 + 1000 - 80 = 1420px from page top
          */
-        const offsetPosition = elementPosition + window.window.scrollY - headerOffset;
+        const offsetPosition = elementPosition + window.scrollY - headerOffset;
 
         /*
          * SCROLL TO CALCULATED POSITION
@@ -197,7 +214,7 @@ const navItems = document.querySelectorAll('.nav-links a');  // All navigation l
  * Fires every time user scrolls the page
  * Note: Scroll events fire frequently - consider throttling for performance on complex sites
  */
-window.addEventListener('scroll', function scrollHandler() {
+function updateActiveNav() {
     /*
      * Arrow function syntax - concise function definition
      * Equivalent to: function() { ... }
@@ -255,7 +272,6 @@ window.addEventListener('scroll', function scrollHandler() {
          * RESET ALL LINKS TO DEFAULT COLOR
          * Setting to empty string removes inline style, reverts to CSS default
          */
-        item.style.color = '';
         item.removeAttribute('aria-current');
 
         /*
@@ -269,11 +285,13 @@ window.addEventListener('scroll', function scrollHandler() {
              * var(--accent) uses CSS custom property (variable)
              * This works because CSS variables are accessible via JS style property
              */
-            item.style.color = 'var(--accent)';
             item.setAttribute('aria-current', 'page');
         }
     });
-});
+}
+
+window.addEventListener('scroll', updateActiveNav);
+updateActiveNav();
 
 // ===================================================================
 // AI CHAT WIDGET

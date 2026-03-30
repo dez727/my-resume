@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0a0a0f">
     <title>Desmond Adongo | Digital Marketer & AI Consultant</title>
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://resume-chatbot.dezad727.workers.dev; img-src 'self' data:;">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,7 +24,7 @@
         <div class="nav-container">
             <a href="#hero" class="nav-logo">DA</a>
      
-            <button class="nav-toggle" aria-label="Toggle navigation">
+            <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="site-navigation">
                 <!--
                     Mobile hamburger menu button
                     aria-label provides accessible description for screen readers
@@ -35,8 +36,8 @@
                 <!-- Three spans styled by CSS to create hamburger icon (☰) -->
             </button>
 
-            <ul class="nav-links">
-                <li><a href="#hero">Home</a></li>
+            <ul class="nav-links" id="site-navigation">
+                <li><a href="#hero" aria-current="page">Home</a></li>
                 <li><a href="#experience">Experience</a></li>
                 <li><a href="#education">Education</a></li>
                 <li><a href="#skills">Skills</a></li>
@@ -72,7 +73,7 @@
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
                             </svg>
-                            <span id="email-text">Loading...</span>
+                            <span id="email-text">Loading…</span>
                         </a>
                        <!-- <a href="tel:XXXXXXXXXX">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -97,7 +98,7 @@
                 </div>
 
                 <div class="hero-photo">
-                    <img src="images/photo.jpg" alt="Desmond Adongo">
+                    <img src="images/photo.jpg" alt="Desmond Adongo" width="360" height="360" fetchpriority="high">
                 </div>
             </div>
         </section>
@@ -118,7 +119,7 @@
 
                 <div class="experience-company">Universities of Wisconsin · Oshkosh, WI</div>
 
-                <div class="experience-details">
+                <div class="experience-details" id="experience-details-1">
 
                     <ul>
                         <li>Conduct discovery sessions with clients to analyze workflows and identify opportunities for AI-driven efficiencies</li>
@@ -128,7 +129,7 @@
                     </ul>
                 </div>
 
-                <button class="expand-btn">
+                <button class="expand-btn" type="button" aria-expanded="false" aria-controls="experience-details-1">
                     <!-- Button to expand/collapse details -->
                     Show details
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
@@ -141,7 +142,7 @@
                     <span class="experience-date">May 2024 – Present</span>
                 </div>
                 <div class="experience-company">Universities of Wisconsin System Board of Regents · Madison, WI</div>
-                <div class="experience-details">
+                <div class="experience-details" id="experience-details-2">
                     <ul>
                         <li>Appointed by the Governor to an 18-member governing body overseeing policy and strategy for Wisconsin's higher education system</li>
                         <li>Participate in monthly board and committee sessions evaluating policies on tuition, academic programs, and institutional governance</li>
@@ -150,7 +151,7 @@
                         <li>Represent Board interests to legislators, government officials, and business leaders</li>
                     </ul>
                 </div>
-                <button class="expand-btn">
+                <button class="expand-btn" type="button" aria-expanded="false" aria-controls="experience-details-2">
                     Show details
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
                 </button>
@@ -162,7 +163,7 @@
                     <span class="experience-date">Jun 2025 – Aug 2025</span>
                 </div>
                 <div class="experience-company">University of Wisconsin Oshkosh · Oshkosh, WI</div>
-                <div class="experience-details">
+                <div class="experience-details" id="experience-details-3">
                     <ul>
                         <li>Analyzed 200+ service desk tickets and virtual agent logs to identify pain points and enhance bot responses</li>
                         <li>Drafted and refined 50+ chatbot messages based on staff and user feedback</li>
@@ -170,7 +171,7 @@
                         <li>Built automation workflows expanding 50+ AI intent coverage and reducing manual escalations</li>
                     </ul>
                 </div>
-                <button class="expand-btn">
+                <button class="expand-btn" type="button" aria-expanded="false" aria-controls="experience-details-3">
                     Show details
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
                 </button>
@@ -182,14 +183,14 @@
                     <span class="experience-date">Jun 2024 – Aug 2024</span>
                 </div>
                 <div class="experience-company">University of Wisconsin Oshkosh · Oshkosh, WI</div>
-                <div class="experience-details">
+                <div class="experience-details" id="experience-details-4">
                     <ul>
                         <li>Orchestrated ethnographic study across 20+ field sites using ArcGIS Survey123 for geospatial data collection</li>
                         <li>Designed data collection framework with 25 targeted interview questions</li>
                         <li>Conducted and transcribed 60+ interviews, applying qualitative coding to synthesize findings</li>
                     </ul>
                 </div>
-                <button class="expand-btn">
+                <button class="expand-btn" type="button" aria-expanded="false" aria-controls="experience-details-4">
                     Show details
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
                 </button>
@@ -201,7 +202,7 @@
                     <span class="experience-date">May 2015 – Mar 2023</span>
                 </div>
                 <div class="experience-company">Foot Locker Inc · Oshkosh, WI</div>
-                <div class="experience-details">
+                <div class="experience-details" id="experience-details-5">
                     <ul>
                         <li>Standardized L&D policies impacting 200+ employees, improving consistency and compliance</li>
                         <li>Redesigned sales and communications enablement for 300+ agents</li>
@@ -210,7 +211,7 @@
                         <li>Managed satellite contact center training partnership supporting 50+ virtual sessions</li>
                     </ul>
                 </div>
-                <button class="expand-btn">
+                <button class="expand-btn" type="button" aria-expanded="false" aria-controls="experience-details-5">
                     Show details
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
                 </button>
@@ -411,7 +412,7 @@
          background. Powered by Gemini Flash via OpenRouter + Cloudflare Worker.
          ================================================================= -->
     <div id="chat-widget">
-        <button id="chat-toggle" aria-label="Chat with AI assistant about Desmond">
+        <button id="chat-toggle" type="button" aria-label="Chat with my resume" aria-expanded="false" aria-controls="chat-panel">
             <!-- Chat bubble icon (shown when panel is closed) -->
             <svg class="chat-icon-open" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
@@ -422,7 +423,7 @@
             </svg>
         </button>
 
-        <div id="chat-panel" role="dialog" aria-label="Chat with AI assistant" aria-hidden="true">
+        <div id="chat-panel" role="dialog" aria-label="Chat with my resume" aria-hidden="true">
             <div class="chat-header">
                 <span class="chat-header-title">Ask about Desmond</span>
                 <button id="chat-close" aria-label="Close chat">&times;</button>
@@ -434,7 +435,8 @@
                 <input
                     type="text"
                     id="chat-input"
-                    placeholder="Ask me anything about Desmond..."
+                    name="message"
+                    placeholder="Ask me anything about Desmond…"
                     maxlength="500"
                     autocomplete="off"
                     aria-label="Type your message"

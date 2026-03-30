@@ -41,9 +41,10 @@
     --border-focus: rgba(245, 158, 11, 0.80); /* Border on keyboard focus */
 
     /* Gradients */
-    --gradient-start: #f59e0b;
-    --gradient-end: #fbbf24;
+    --gradient-start: var(--accent);
+    --gradient-end: var(--accent-secondary);
     --gradient-cta: linear-gradient(135deg, var(--accent), var(--accent-purple));
+    --gradient-glow: linear-gradient(135deg, var(--accent-glow), rgba(155, 89, 178, 0.10));
 
     /* Radius */
     --radius-sm:   4px;
@@ -61,6 +62,10 @@
     --space-7: 48px;
     --space-8: 64px;
     --space-9: 96px;
+
+    /* Layout */
+    --content-width: 780px;
+    --feature-width: 960px;
 
     /* Shadows & Glows */
     --shadow-card: 0 1px 3px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.2);
@@ -103,6 +108,7 @@ html {
      * When clicking anchor links, page scrolls smoothly instead of jumping
      */
     scroll-behavior: smooth;
+    color-scheme: dark;
 }
 
 body {
@@ -115,6 +121,17 @@ body {
     line-height: 1.6;               /* Space between lines of text (1.6 = 160% of font size) */
     font-size: 16px;                /* Base font size - rem units are based on this */
     overflow-x: hidden;             /* Prevent horizontal scrolling */
+}
+
+a,
+button,
+input {
+    -webkit-tap-highlight-color: rgba(245, 158, 11, 0.15);
+}
+
+a,
+button {
+    touch-action: manipulation;
 }
 
 /* ===================================================================
@@ -210,7 +227,7 @@ nav {
      * Element stays in the same position even when scrolling
      * Positioned relative to the viewport (browser window)
      */
-    position: fixed;
+    position: sticky;
     top: 0;      /* Stick to top of viewport */
     left: 0;     /* Stretch from left edge */
     right: 0;    /* To right edge - creates full-width navbar */
@@ -230,20 +247,19 @@ nav {
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
 
-    border-bottom: 1px solid var(--border);  /* Subtle divider line */
+    box-shadow: var(--shadow-nav);
 
     /*
-     * z-index: 1000 ensures nav appears above other content
-     * Higher z-index = closer to user. 1000 is arbitrarily high to stay on top
+     * z-index: 100 ensures nav appears above content while remaining restrained
      */
-    z-index: 1000;
+    z-index: 100;
 
-    padding: 0 2rem;  /* Horizontal padding - no vertical padding */
+    padding: 0 var(--space-6);  /* Horizontal padding - no vertical padding */
 }
 
 .nav-container {
     /* Container sizing and centering */
-    max-width: 1100px;   /* Limits width on large screens for readability */
+    max-width: var(--content-width);    /* Matches documented content width */
     margin: 0 auto;      /* Centers container horizontally (auto left/right margins) */
     height: 64px;        /* Fixed height for consistent navbar size */
 
@@ -275,37 +291,46 @@ nav {
     font-weight: 500;        /* Medium weight */
     color: var(--text-primary);
     text-decoration: none;   /* Remove underline from link */
-    letter-spacing: -0.02em; /* Slight negative spacing tightens letters (em = relative to font size) */
+    letter-spacing: 0;
+    line-height: 1;
 }
 
 .nav-links {
     display: flex;        /* Arrange list items horizontally */
-    gap: 2rem;           /* Modern way to add space between flex items (replaces margin) */
+    gap: var(--space-2); /* Padded links create their own spacing */
     list-style: none;    /* Remove bullet points */
 }
 
 .nav-links a {
+    display: inline-flex;
+    align-items: center;
     color: var(--text-secondary);  /* Muted color for unselected links */
     text-decoration: none;         /* Remove underline */
     font-size: 0.875rem;          /* Slightly smaller than body text (14px) */
-    font-weight: 400;             /* Normal weight */
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    min-height: 44px;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
 
     /*
      * TRANSITIONS - Smooth animations when properties change
      * Syntax: transition: property duration timing-function;
      * Here: color changes over 0.2 seconds with ease timing (slow start/end)
      */
-    transition: color 0.2s ease;
-
-    position: relative;  /* Creates positioning context for ::after pseudo-element */
+    transition:
+        color var(--duration-base) var(--ease-default),
+        background-color var(--duration-base) var(--ease-default);
 }
 
 /*
  * :hover is a pseudo-class that applies when user hovers over element
  * Provides visual feedback for interactivity
  */
-.nav-links a:hover {
-    color: var(--accent);  /* Change to bright accent color on hover */
+.nav-links a:hover,
+.nav-links a:focus-visible {
+    color: var(--text-primary);
+    background: var(--accent-glow);
 }
 
 /*
@@ -313,29 +338,12 @@ nav {
  * Pseudo-elements add content without extra HTML
  */
 .nav-links a::after {
-    content: '';  /* Required for pseudo-element to appear (even if empty) */
-
-    /*
-     * Absolute positioning places element relative to nearest positioned ancestor
-     * Parent has position: relative, so this positions relative to the link
-     */
-    position: absolute;
-    bottom: -4px;  /* 4px below the link text */
-    left: 0;       /* Aligned to left edge */
-
-    width: 0;      /* Starts with no width (invisible) */
-    height: 1px;   /* Thin line */
-    background: var(--accent);  /* Accent color line */
-
-    transition: width 0.2s ease;  /* Animate width changes */
+    content: none;
 }
 
-/*
- * On hover, animate the underline from left to right
- * width: 0 → width: 100% creates a growing line effect
- */
-.nav-links a:hover::after {
-    width: 100%;  /* Expand to full width of link */
+.nav-links a[aria-current='page'] {
+    color: var(--accent);
+    background: var(--accent-glow);
 }
 
 /* -------------------------------------------------------------------
@@ -354,7 +362,10 @@ nav {
     background: none;  /* Remove default button background */
     border: none;      /* Remove default button border */
     cursor: pointer;   /* Show hand cursor on hover (indicates clickable) */
-    padding: 0.5rem;   /* Small padding for larger touch target */
+    min-width: 44px;
+    min-height: 44px;
+    padding: var(--space-2);
+    border-radius: var(--radius-sm);
 }
 
 .nav-toggle span {
@@ -372,7 +383,10 @@ nav {
      * Transition prepares for animation (rotates into X when menu opens)
      * JavaScript adds classes that trigger these animations
      */
-    transition: all 0.3s ease;
+    transition:
+        transform var(--duration-base) var(--ease-default),
+        opacity var(--duration-base) var(--ease-default),
+        background-color var(--duration-base) var(--ease-default);
 }
 
 /* ===================================================================
@@ -382,9 +396,9 @@ nav {
    consistent padding on sides.
    =================================================================== */
 main {
-    max-width: 1100px;   /* Prevents content from being too wide on large screens */
+    max-width: var(--feature-width);
     margin: 0 auto;      /* Centers container horizontally */
-    padding: 0 2rem;     /* Horizontal padding - keeps content away from screen edges */
+    padding: 0 var(--space-6);
 }
 
 /* -------------------------------------------------------------------
@@ -394,7 +408,9 @@ main {
    Creates a polished, modern entrance effect.
    ------------------------------------------------------------------- */
 section {
-    padding: 5rem 0;  /* Vertical spacing between sections (5rem top, 5rem bottom) */
+    padding: var(--space-8) 0;
+    scroll-margin-top: calc(64px + var(--space-5));
+    width: 100%;
 
     /*
      * Initial state before animation (invisible and slightly below position)
@@ -410,7 +426,20 @@ section {
      * - ease: starts slow, speeds up, ends slow
      * - forwards: keeps final state after animation completes
      */
-    animation: fadeInUp 0.6s ease forwards;
+    animation: fadeInUp 0.6s var(--ease-out) forwards;
+}
+
+#hero,
+#experience,
+#education {
+    max-width: var(--content-width);
+    margin: 0 auto;
+}
+
+#skills,
+#projects {
+    max-width: var(--feature-width);
+    margin: 0 auto;
 }
 
 /*
@@ -450,13 +479,13 @@ section:nth-child(6) { animation-delay: 0.6s; }  /* Last section animates last *
      * min-height: 100vh makes section fill the full screen height
      * min-height (not height) allows section to grow if content is taller
      */
-    min-height: 55vh;
+    min-height: auto;
 
     display: flex;         /* Use flexbox to vertically center content */
-    align-items: center;   /* Center content vertically within the full-height section */
+    align-items: flex-start;
 
-    padding-top: 64px;     /* Account for fixed navbar height */
-    padding-bottom: 0;     /* No bottom padding - creates smooth transition to next section */
+    padding-top: var(--space-7);
+    padding-bottom: var(--space-6);
 }
 
 .hero-content {
@@ -474,14 +503,14 @@ section:nth-child(6) { animation-delay: 0.6s; }  /* Last section animates last *
      * - 360px: Fixed width for photo column
      * Result: Text column grows/shrinks, photo stays 360px wide
      */
-    grid-template-columns: 1fr 360px;
+    grid-template-columns: minmax(0, 1fr) 280px;
 
     /*
      * gap: Modern property for spacing between grid items
      * Replaces old grid-column-gap and grid-row-gap
      * 4rem creates generous space between text and photo
      */
-    gap: 4rem;
+    gap: var(--space-6);
 
     align-items: center;  /* Vertically center items within their grid cells */
 }
@@ -504,6 +533,7 @@ section:nth-child(6) { animation-delay: 0.6s; }  /* Last section animates last *
     letter-spacing: -0.03em; /* Tight spacing for large headings */
     line-height: 1.1;        /* Tight line height (1.1 = 110% of font size) */
     margin-bottom: 1rem;
+    text-wrap: balance;
 }
 
 /*
@@ -551,10 +581,10 @@ section:nth-child(6) { animation-delay: 0.6s; }  /* Last section animates last *
 
 .hero-summary {
     color: var(--text-secondary);
-    font-size: 1rem;
-    line-height: 1.7;
+    font-size: 1.0625rem;
+    line-height: 1.6;
     margin-bottom: 2rem;
-    max-width: 520px;
+    max-width: 100%;
 }
 
 .hero-contact {
@@ -570,43 +600,52 @@ section:nth-child(6) { animation-delay: 0.6s; }  /* Last section animates last *
     color: var(--text-secondary);
     text-decoration: none;
     font-size: 0.875rem;
-    padding: 0.5rem 1rem;
+    min-height: 44px;
+    padding: var(--space-2) var(--space-4);
     border: 1px solid var(--border);
-    border-radius: 6px;
-    transition: all 0.2s ease;
+    border-radius: var(--radius-md);
+    transition:
+        color var(--duration-base) var(--ease-default),
+        border-color var(--duration-base) var(--ease-default),
+        background-color var(--duration-base) var(--ease-default);
 }
 
 .hero-contact a:hover {
-    color: var(--accent);
-    border-color: var(--accent);
+    color: var(--text-primary);
+    border-color: var(--border-hover);
     background: var(--accent-glow);
 }
 
 .chat-cta {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    margin-top: 20px;
-    padding: 12px 24px;
-    background: linear-gradient(135deg, var(--accent), #9b59b6);
+    gap: var(--space-2);
+    margin-top: var(--space-5);
+    min-height: 44px;
+    padding: var(--space-3) var(--space-6);
+    background: var(--gradient-cta);
     color: #fff;
     border: none;
-    border-radius: 8px;
-    font-size: 0.95rem;
+    border-radius: var(--radius-md);
+    font-size: 0.9375rem;
     font-weight: 600;
     font-family: inherit;
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: 0 2px 12px rgba(200, 150, 255, 0.2);
+    transition:
+        opacity var(--duration-base) var(--ease-default),
+        transform var(--duration-fast) var(--ease-default),
+        box-shadow var(--duration-base) var(--ease-default);
 }
 
 .chat-cta:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(200, 150, 255, 0.35);
+    opacity: 0.92;
+    transform: translateY(-1px);
+    box-shadow: var(--glow-accent);
 }
 
 .chat-cta:active {
     transform: translateY(0);
+    opacity: 1;
 }
 
 .hero-photo {
@@ -614,13 +653,14 @@ section:nth-child(6) { animation-delay: 0.6s; }  /* Last section animates last *
 }
 
 .hero-photo img {
-    width: 360px;
-    height: 360px;
+    width: 280px;
+    height: 280px;
     object-fit: cover;
     object-position: center top;
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     filter: grayscale(10%);
-    transition: filter 0.3s ease;
+    transition: filter var(--duration-base) var(--ease-default);
+    box-shadow: var(--shadow-card);
 }
 
 .hero-photo:hover img {
@@ -631,9 +671,9 @@ section:nth-child(6) { animation-delay: 0.6s; }  /* Last section animates last *
     content: '';
     position: absolute;
     inset: -1px;
-    border-radius: 13px;
+    border-radius: calc(var(--radius-lg) + 1px);
     padding: 1px;
-    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+    background: var(--gradient-glow);
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
@@ -644,25 +684,33 @@ section:nth-child(6) { animation-delay: 0.6s; }  /* Last section animates last *
    Section Headers
    =========================== */
 .section-header {
-    margin-bottom: 3rem;
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin-bottom: var(--space-7);
 }
 
 .section-header h2 {
     font-family: 'Playfair Display', Georgia, serif;
-    font-size: 1.75rem;
+    font-size: clamp(1.875rem, 4vw, 2.25rem);
     font-weight: 500;
     letter-spacing: -0.02em;
-    display: inline-flex;
-    align-items: center;
-    gap: 1rem;
+    line-height: 1.2;
+    text-wrap: balance;
+}
+
+.section-header::after {
+    content: '';
+    display: block;
+    width: 48px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 1px;
+    flex-shrink: 0;
 }
 
 .section-header h2::after {
-    content: '';
-    display: block;
-    width: 60px;
-    height: 1px;
-    background: linear-gradient(90deg, var(--accent), transparent);
+    content: none;
 }
 
 /* ===================================================================
@@ -746,7 +794,7 @@ section:nth-child(6) { animation-delay: 0.6s; }  /* Last section animates last *
 
 .experience-title {
     font-size: 1.125rem;
-    font-weight: 500;
+    font-weight: 600;
     color: var(--text-primary);
 }
 
@@ -791,21 +839,23 @@ section:nth-child(6) { animation-delay: 0.6s; }  /* Last section animates last *
     content: '→';
     position: absolute;
     left: 0;
-    color: var(--text-muted);
+    color: var(--accent);
     font-size: 0.75rem;
 }
 
 .expand-btn {
     background: none;
     border: none;
-    color: var(--text-muted);
+    color: var(--text-secondary);
     font-size: 0.8125rem;
+    font-weight: 500;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
-    gap: 0.375rem;
+    gap: var(--space-1);
     margin-top: 0.75rem;
-    transition: color 0.2s ease;
+    padding: var(--space-2) 0;
+    transition: color var(--duration-base) var(--ease-default);
     min-height: 44px;
     min-width: 44px;
 }
@@ -815,9 +865,9 @@ section:nth-child(6) { animation-delay: 0.6s; }  /* Last section animates last *
 }
 
 .expand-btn svg {
-    width: 14px;
-    height: 14px;
-    transition: transform 0.2s ease;
+    width: 16px;
+    height: 16px;
+    transition: transform var(--duration-base) var(--ease-default);
 }
 
 .expand-btn.expanded svg {
@@ -830,25 +880,16 @@ section:nth-child(6) { animation-delay: 0.6s; }  /* Last section animates last *
 .education-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 2rem;
-    position: relative;
-    overflow: hidden;
-}
-
-.education-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
 }
 
 .education-degree {
-    font-size: 1.25rem;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.5rem;
     font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
     margin-bottom: 0.25rem;
 }
 
@@ -867,16 +908,20 @@ section:nth-child(6) { animation-delay: 0.6s; }  /* Last section animates last *
 .education-credentials {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: var(--space-2);
 }
 
 .credential-tag {
-    background: var(--accent-glow);
-    color: var(--accent);
-    padding: 0.375rem 0.75rem;
-    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
     font-size: 0.8125rem;
-    font-weight: 500;
+    font-weight: 400;
+    line-height: 1.4;
 }
 
 /* ===================================================================
@@ -913,20 +958,29 @@ section:nth-child(6) { animation-delay: 0.6s; }  /* Last section animates last *
 }
 
 .skill-category {
-    background: var(--bg-secondary);
+    background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    transition:
+        border-color var(--duration-base) var(--ease-default),
+        box-shadow var(--duration-base) var(--ease-default);
+}
+
+.skill-category:hover {
+    border-color: var(--border-hover);
+    box-shadow: var(--shadow-card);
 }
 
 .skill-category h3 {
-    font-size: 0.9375rem;
-    font-weight: 500;
+    font-size: 1.125rem;
+    font-weight: 600;
     color: var(--text-primary);
     margin-bottom: 1rem;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--space-2);
+    line-height: 1.4;
 }
 
 .skill-category h3 span {
@@ -940,18 +994,25 @@ section:nth-child(6) { animation-delay: 0.6s; }  /* Last section animates last *
 }
 
 .skill-tag {
-    background: var(--bg-card);
+    display: inline-flex;
+    align-items: center;
+    background: var(--bg-secondary);
     color: var(--text-secondary);
-    padding: 0.375rem 0.75rem;
-    border-radius: 4px;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
     font-size: 0.8125rem;
     border: 1px solid var(--border);
-    transition: all 0.2s ease;
+    font-weight: 400;
+    line-height: 1.4;
+    transition:
+        border-color var(--duration-base) var(--ease-default),
+        color var(--duration-base) var(--ease-default),
+        background-color var(--duration-base) var(--ease-default);
 }
 
 .skill-tag:hover {
-    border-color: var(--accent);
-    color: var(--accent);
+    border-color: var(--border-hover);
+    color: var(--text-primary);
 }
 
 /* ===========================
@@ -966,24 +1027,25 @@ section:nth-child(6) { animation-delay: 0.6s; }  /* Last section animates last *
 .project-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.75rem;
-    transition: all 0.3s ease;
-    position: relative;
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    transition:
+        border-color var(--duration-base) var(--ease-default),
+        box-shadow var(--duration-base) var(--ease-default);
 }
 
 .project-card:hover {
-    border-color: rgba(245, 158, 11, 0.3);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border-color: var(--border-hover);
+    box-shadow: var(--shadow-card);
 }
 
 .project-card h3 {
-    font-size: 1.0625rem;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.375rem;
     font-weight: 500;
     margin-bottom: 0.75rem;
     color: var(--text-primary);
-    line-height: 1.4;
+    line-height: 1.3;
 }
 
 .project-card p {
@@ -996,16 +1058,20 @@ section:nth-child(6) { animation-delay: 0.6s; }  /* Last section animates last *
 .project-tech {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.375rem;
+    gap: var(--space-2);
 }
 
 .project-tech span {
+    display: inline-flex;
+    align-items: center;
     background: var(--bg-secondary);
-    color: var(--text-muted);
-    padding: 0.25rem 0.5rem;
-    border-radius: 3px;
-    font-size: 0.75rem;
-    font-weight: 500;
+    color: var(--text-secondary);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    font-size: 0.8125rem;
+    font-weight: 400;
+    line-height: 1.4;
 }
 
 /* ===========================
@@ -1013,12 +1079,12 @@ section:nth-child(6) { animation-delay: 0.6s; }  /* Last section animates last *
    =========================== */
 footer {
     border-top: 1px solid var(--border);
-    padding: 3rem 2rem;
+    padding: var(--space-7) var(--space-6);
     margin-top: 2rem;
 }
 
 .footer-content {
-    max-width: 1100px;
+    max-width: var(--content-width);
     margin: 0 auto;
     display: flex;
     flex-wrap: wrap;
@@ -1058,39 +1124,41 @@ footer {
 /* --- Floating Toggle Button --- */
 #chat-widget {
     position: fixed;
-    bottom: 1.5rem;
-    right: 1.5rem;
+    bottom: var(--space-6);
+    right: var(--space-6);
     z-index: 1001;
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 #chat-toggle {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
+    width: 52px;
+    height: 52px;
+    border-radius: var(--radius-full);
     border: none;
     cursor: pointer;
-    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+    background: var(--gradient-cta);
     color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 20px rgba(168, 85, 247, 0.4);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 16px rgba(245, 158, 11, 0.25);
+    transition:
+        transform var(--duration-base) var(--ease-default),
+        box-shadow var(--duration-base) var(--ease-default);
 }
 
 #chat-toggle:hover {
     transform: scale(1.08);
-    box-shadow: 0 6px 28px rgba(168, 85, 247, 0.55);
+    box-shadow: 0 6px 24px rgba(245, 158, 11, 0.35);
 }
 
 /* Subtle pulse animation to draw attention */
 @keyframes chatPulse {
-    0%, 100% { box-shadow: 0 4px 20px rgba(168, 85, 247, 0.4); }
-    50% { box-shadow: 0 4px 28px rgba(168, 85, 247, 0.6); }
+    0%, 100% { box-shadow: 0 4px 16px rgba(245, 158, 11, 0.25); }
+    50% { box-shadow: 0 6px 24px rgba(245, 158, 11, 0.35); }
 }
 #chat-toggle:not(.chat-open) {
-    animation: chatPulse 3s ease-in-out infinite;
+    animation: none;
 }
 #chat-toggle.chat-open {
     animation: none;
@@ -1106,15 +1174,17 @@ footer {
     max-height: calc(100vh - 8rem);
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.45);
     transform: translateY(20px) scale(0.95);
     opacity: 0;
     pointer-events: none;
-    transition: transform 0.25s ease, opacity 0.25s ease;
+    transition:
+        transform var(--duration-base) var(--ease-out),
+        opacity var(--duration-base) var(--ease-out);
 }
 
 #chat-panel.chat-visible {
@@ -1143,7 +1213,7 @@ footer {
     left: 0;
     right: 0;
     height: 2px;
-    background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+    background: var(--gradient-cta);
 }
 
 .chat-header-title {
@@ -1155,15 +1225,19 @@ footer {
 #chat-close {
     background: none;
     border: none;
-    color: var(--text-muted);
+    color: var(--text-secondary);
     font-size: 1.25rem;
     cursor: pointer;
     padding: 0.25rem;
     line-height: 1;
-    transition: color 0.2s ease;
+    border-radius: var(--radius-sm);
+    transition:
+        color var(--duration-base) var(--ease-default),
+        background-color var(--duration-base) var(--ease-default);
 }
 #chat-close:hover {
     color: var(--text-primary);
+    background: var(--accent-glow);
 }
 
 /* --- Messages Area --- */
@@ -1307,19 +1381,23 @@ footer {
 
 .chat-suggestion {
     padding: 6px 12px;
-    background: transparent;
-    color: var(--accent);
-    border: 1px solid var(--accent);
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
     border-radius: 16px;
     font-size: 0.8125rem;
     font-family: inherit;
     cursor: pointer;
-    transition: background 0.2s ease, color 0.2s ease;
+    transition:
+        background-color var(--duration-base) var(--ease-default),
+        color var(--duration-base) var(--ease-default),
+        border-color var(--duration-base) var(--ease-default);
 }
 
 .chat-suggestion:hover {
-    background: var(--accent);
-    color: #fff;
+    background: var(--accent-glow);
+    color: var(--text-primary);
+    border-color: var(--border-hover);
 }
 
 /* Typing indicator */
@@ -1362,41 +1440,51 @@ footer {
     flex: 1;
     background: var(--bg-primary);
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     padding: 0.5rem 0.75rem;
     color: var(--text-primary);
     font-family: inherit;
     font-size: 0.875rem;
     outline: none;
-    transition: border-color 0.2s ease;
+    transition:
+        border-color var(--duration-base) var(--ease-default),
+        box-shadow var(--duration-base) var(--ease-default);
 }
 
 #chat-input::placeholder {
     color: var(--text-muted);
 }
 
-#chat-input:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 2px var(--accent-glow);
+#chat-input:focus-visible {
+    border-color: var(--border-focus);
+    box-shadow: var(--glow-focus);
 }
 
 #chat-send {
     width: 44px;
     height: 44px;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     border: none;
-    background: var(--accent);
+    background: var(--gradient-cta);
     color: #fff;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    transition: background 0.2s ease, opacity 0.2s ease;
+    transition:
+        transform var(--duration-fast) var(--ease-default),
+        box-shadow var(--duration-base) var(--ease-default),
+        opacity var(--duration-base) var(--ease-default);
 }
 
 #chat-send:hover {
-    background: var(--accent-secondary);
+    transform: translateY(-1px);
+    box-shadow: var(--glow-accent);
+}
+
+#chat-send:active {
+    transform: translateY(0);
 }
 
 #chat-send:disabled {
@@ -1457,7 +1545,7 @@ footer {
     /* MOBILE LAYOUT */
 
     nav {
-        padding: 0 1rem;  /* Reduced padding for narrow screens */
+        padding: 0 var(--space-4);
     }
 
     .nav-toggle {
@@ -1478,10 +1566,10 @@ footer {
         left: 0;
         right: 0;           /* Full-width */
 
-        background: rgba(12, 18, 34, 0.98);  /* Nearly opaque background */
+        background: rgba(19, 19, 24, 0.98);
         flex-direction: column;  /* Stack links vertically */
-        padding: 2rem;
-        gap: 1.5rem;
+        padding: var(--space-6);
+        gap: var(--space-4);
 
         /*
          * transform: translateY(-100%) moves element up by its full height
@@ -1490,7 +1578,9 @@ footer {
         transform: translateY(-100%);
 
         opacity: 0;              /* Invisible */
-        transition: all 0.3s ease;  /* Smooth animation when opening/closing */
+        transition:
+            transform var(--duration-slow) var(--ease-out),
+            opacity var(--duration-slow) var(--ease-out);
         pointer-events: none;    /* Can't click on hidden menu */
     }
 
@@ -1506,11 +1596,11 @@ footer {
     }
 
     main {
-        padding: 0 1rem;
+        padding: 0 var(--space-4);
     }
 
     section {
-        padding: 3rem 0;
+        padding: var(--space-7) 0;
     }
 
     #hero {
@@ -1538,7 +1628,7 @@ footer {
         bottom: 5rem;
         height: calc(100vh - 7rem);
         max-height: none;
-        border-radius: 10px;
+        border-radius: var(--radius-lg);
     }
 
     #chat-widget {
